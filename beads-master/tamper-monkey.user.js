@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         PixelBead Master Addons
 // @namespace    http://tampermonkey.net/
-// @version      1.0
+// @version      1.1
 // @updateURL    https://raw.githubusercontent.com/Jotaveesse/public-files/refs/heads/main/beads-master/tamper-monkey.user.js
 // @downloadURL  https://raw.githubusercontent.com/Jotaveesse/public-files/refs/heads/main/beads-master/tamper-monkey.user.js
 // @match        https://pixel-bead.pixarmaster.com/*
@@ -17,6 +17,8 @@
     // =================================================================
     const ctxs = [];
     window.__ctxs = ctxs;
+
+    interceptWorker();
 
     function patchChunk(chunk) {
         if (!Array.isArray(chunk)) return;
@@ -522,6 +524,115 @@
             cropped.width,
             cropped.height,
         );
+    }
+
+    function interceptWorker() {
+        const WORKER_URL_MATCH = "turbopack-worker";
+
+        // Map: substring to match in a chunk path -> your replacement URL
+        const CHUNK_PATCHES = [
+            {
+                match: "/_next/static/chunks/0wbn~pxju.20z.js",
+                customUrl:
+                    "https://cdn.jsdelivr.net/gh/jotaveesse/public-files/beads-master/0wbn~pxju.20z.js",
+            },
+        ];
+
+        const OriginalWorker = window.Worker;
+
+        // Runs inside the worker's own global scope. Wraps importScripts so any
+        // call to a matched chunk path is redirected to fetch the replacement
+        // URL's TEXT and eval it locally instead — this respects real CORS
+        // (fetch checks Access-Control-Allow-Origin properly) rather than the
+        // stricter same-origin-only rule that importScripts itself enforces.
+        function workerScopePatch(patchesJson) {
+            const patches = JSON.parse(patchesJson);
+            const realImportScripts = self.importScripts.bind(self);
+
+            self.importScripts = function (...urls) {
+                const rewritten = urls.map((u) => {
+                    const hit = patches.find((p) => u.indexOf(p.match) !== -1);
+                    return hit ? hit.customUrl : u;
+                });
+
+                const anyPatched = rewritten.some((u, i) => u !== urls[i]);
+                if (!anyPatched) {
+                    return realImportScripts(...urls);
+                }
+
+                // For any patched URL, fetch its source synchronously via XHR
+                // (importScripts semantics are synchronous; fetch() is async
+                // and can't be awaited here without turning this into an async
+                // function, which importScripts callers don't expect) and eval
+                // it in this scope. Unpatched URLs still go through the normal
+                // importScripts path.
+                for (let i = 0; i < urls.length; i++) {
+                    const hit = patches.find(
+                        (p) => urls[i].indexOf(p.match) !== -1,
+                    );
+                    if (!hit) {
+                        realImportScripts(urls[i]);
+                        continue;
+                    }
+                    const xhr = new XMLHttpRequest();
+                    xhr.open("GET", hit.customUrl, false); // synchronous
+                    xhr.send(null);
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        (0, eval)(xhr.responseText);
+                    } else {
+                        throw new Error(
+                            "[pb] failed to fetch patched chunk: " +
+                                hit.customUrl +
+                                " (status " +
+                                xhr.status +
+                                ")",
+                        );
+                    }
+                }
+            };
+        }
+
+        const workerScopePatchSrc = workerScopePatch.toString();
+
+        function buildWrapperBlobUrl(originalWorkerUrl) {
+            const patchesJson = JSON.stringify(CHUNK_PATCHES);
+            const prefix =
+                "(" +
+                workerScopePatchSrc +
+                ")(" +
+                JSON.stringify(patchesJson) +
+                ");\n";
+            const blobContent =
+                prefix +
+                "importScripts(" +
+                JSON.stringify(originalWorkerUrl) +
+                ");";
+            const blob = new Blob([blobContent], {
+                type: "application/javascript",
+            });
+            const blobUrl = URL.createObjectURL(blob);
+
+            // Preserve the original worker URL's hash on the wrapper blob's URL,
+            // since self.location inside the worker reflects the blob URL it was
+            // actually constructed from — not the URL later passed to
+            // importScripts(). The real bootstrap code reads self.location.hash
+            // to find its params array, so without this it sees nothing.
+            const originalHash = new URL(originalWorkerUrl, location.href).hash;
+            return blobUrl + originalHash;
+        }
+
+        window.Worker = function (scriptURL, options) {
+            const urlStr =
+                typeof scriptURL === "string" ? scriptURL : String(scriptURL);
+
+            if (!urlStr.includes(WORKER_URL_MATCH)) {
+                return new OriginalWorker(scriptURL, options);
+            }
+
+            console.log("[pb] intercepted worker, wrapping:", urlStr);
+            const wrapperUrl = buildWrapperBlobUrl(urlStr);
+            return new OriginalWorker(wrapperUrl, options);
+        };
     }
 
     // =================================================================
