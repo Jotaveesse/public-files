@@ -652,13 +652,6 @@
             );
             buildPanel(store, controlGroups[2]);
             buildAutoCropButton(store, controlGroups[0]);
-
-            if (
-                document.getElementById("pb-color-weights") &&
-                document.getElementById("pb-autocrop-section")
-            ) {
-                obs.disconnect();
-            }
         });
 
         obs.observe(document.documentElement, {
