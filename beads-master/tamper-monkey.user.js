@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         PixelBead Master Addons
 // @namespace    http://tampermonkey.net/
-// @version      1.1
+// @version      1.1.1
 // @updateURL    https://raw.githubusercontent.com/Jotaveesse/public-files/refs/heads/main/beads-master/tamper-monkey.user.js
 // @downloadURL  https://raw.githubusercontent.com/Jotaveesse/public-files/refs/heads/main/beads-master/tamper-monkey.user.js
 // @match        https://pixel-bead.pixarmaster.com/*
