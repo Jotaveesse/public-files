@@ -1,0 +1,447 @@
+@keyframes shake {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    50% {
+        transform: rotate(10deg);
+    }
+
+    75% {
+        transform: rotate(-10deg);
+    }
+
+    100% {
+        transform: rotate(0deg);
+    }
+}
+
+body {
+    height: 100%;
+    overflow-y: hidden;
+    margin: 0px;
+    color: white;
+    font-weight: 600;
+    font-family: Helvetica;
+}
+
+textarea {
+    background-color: #333;
+    border: none;
+    color: white;
+    border-radius: 10px;
+    padding: 8px;
+    resize: none;
+    font-weight: 600;
+    font-family: Helvetica;
+    font-size: 12px;
+    width: 100%;
+    height: calc(100% - 34px);
+}
+
+#main {
+    background-color: #333;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 45% 55%;
+}
+
+#crypt-area {
+    background-color: #444;
+    color: white;
+    height: 100%;
+    width: 100%;
+    padding: 16px;
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+
+#crypt-area::-webkit-scrollbar {
+    display: none;
+}
+
+#crypt-area {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.input-section {
+    height: 50%;
+    min-height: 250px;
+    padding-bottom: 16px;
+    box-sizing: border-box;
+}
+
+.output-section {
+    height: 50%;
+    min-height: 250px;
+}
+
+.text-area-section {
+    height: 65%;
+}
+
+.crypt-area-title {
+    padding-bottom: 8px;
+    width: 100%;
+    height: 18px;
+}
+
+
+.file-input-section{
+    height:40px;
+    width:min-content;
+    /*! padding:10px 0px; */
+    margin-left:auto;
+    box-sizing: border-box;
+}
+
+#file-input{
+    height:100%;
+}
+
+#file-input::file-selector-button{
+    color: white;
+    background-color: #444;
+    height:100%;
+    border: none;
+    border-radius: 4px;
+    padding:4px;
+    font-weight: 800;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+.progress-bar {
+    display: none;
+    width: 100%;
+    height: 28px;
+    background-color: #333;
+    position: relative;
+    margin-top: 16px;
+    border-radius: 10px;
+}
+
+.bar {
+    background-color: #444;
+    width: 0%;
+    height: 100%;
+}
+
+#error-message {
+    display: none;
+    width: max-content;
+    margin-left: auto;
+    padding: 16px 4px 0px 0px;
+}
+
+.password-section {
+    display: flex;
+    flex-wrap: wrap;
+    height: 22%;
+    align-content: flex-start;
+}
+
+#password-area{
+    width: calc(100% - 34px);
+    height:28px;
+}
+
+#crypt-show-button{
+    height:28px;
+    width:28px;
+    margin:0px 0px 0px 6px;
+}
+
+#crypt-show-button img{
+    height:24px;
+}
+
+.button-section {
+    height: 32px;
+    width: max-content;
+    margin-left: auto;
+}
+
+.button-section button {
+    color: white;
+    background-color: #333;
+    border: none;
+    height: 100%;
+    width: 80px;
+    padding: 8px;
+    font-weight: 800;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.button-section button:hover {
+    background-color: #2a2a2a;
+}
+
+#json-area {
+    height: 100%;
+    background-color: #444;
+    overflow-y: auto;
+}
+
+input {
+    font-size: 14px;
+    color: white;
+    background-color: #333;
+    padding: 6px;
+    border-radius: 6px;
+    border: none;
+}
+
+#json-section {
+    height: min-content;
+    width: 100%;
+    overflow-y: auto;
+    background-color: #444;
+    display: grid;
+    grid-template-columns: 100%;
+    padding-top: 6px;
+}
+
+.person-row {
+    width: 100%;
+    height: fit-content;
+    background-color: #333;
+    display: flex;
+    flex-wrap: wrap;
+    padding: 2px 0px;
+    border-radius: 10px;
+    border-top: solid 3px #444;
+    border-bottom: solid 3px #444;
+    box-sizing: border-box;
+}
+
+.person-row:first-child {
+    border-top: none;
+}
+
+.person-row:last-child {
+    border-bottom: none;
+}
+
+.person-title {
+    height: fit-content;
+    width: calc(100% - 92px);
+    margin: auto;
+    padding: 8px 18px;
+    font-size: 1.3vw;
+    box-sizing: border-box;
+}
+
+.person-title input {
+    width: 100%;
+    margin: auto;
+    padding: 4px 12px;
+    font-size: 1vw;
+    box-sizing: border-box;
+}
+
+.person-buttons {
+    padding: 4px 4px 4px 0px;
+    box-sizing: border-box;
+    margin: auto;
+}
+
+.dropdown-button,
+.remove-button,
+.show-button,
+.new-button {
+    background-color: #333;
+    padding: 3px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    transition-duration: 0.2s;
+}
+
+.dropdown-button:hover,
+.remove-button:hover {
+    background-color: #444;
+}
+
+.dropdown-button img,
+.remove-button img {
+    height: 30px;
+}
+
+.show-button {
+    background-color: #444;
+    height: 20px;
+    margin: auto;
+    padding: 0px;
+}
+
+.show-button:hover {
+    animation-name: shake;
+    animation-duration: 0.3s;
+}
+
+.show-button img {
+    height: 18px;
+}
+
+.person-accounts {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0px 16px;
+}
+
+.account-row {
+    width: 100%;
+    background-color: inherit;
+    display: flex;
+    flex-wrap: wrap;
+    padding-top: 12px;
+}
+
+.account-row:first-child {
+    padding-top: 0px;
+}
+
+.account-top {
+    display: flex;
+    background-color: #444;
+    width: 30%;
+    padding: 4px 8px 4px 12px;
+    border-radius: 10px 10px 0px 0px;
+}
+
+.account-top .remove-button {
+    background-color: #444;
+    margin-left: auto;
+}
+
+.account-top .remove-button img {
+    height: 22px;
+}
+
+.account-top .remove-button:hover {
+    background-color: #333;
+}
+
+.account-title {
+    width: 75%;
+    margin: auto 0px;
+    font-size: 1.1vw;
+}
+
+.account-title input {
+    width: 100%;
+    margin: auto;
+    padding: 4px 8px;
+    font-size: 0.8vw;
+    box-sizing: border-box;
+}
+
+.account-data {
+    background-color: #444;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    border-radius: 0px 10px 10px 10px;
+}
+
+.data-row {
+    width: calc(100% - 38px);
+    background-color: transparent;
+    display: flex;
+    flex-wrap: nowrap;
+    border-radius: 10px;
+}
+
+.data-row .remove-button {
+    background-color: #444;
+    height: 32px;
+    width: 36px;
+    margin: auto;
+}
+
+.data-row .remove-button:hover {
+    background-color: #333;
+}
+
+.data-row .remove-button img {
+    height: 19px;
+}
+
+.login-field {
+    padding: 10px 12px;
+    width: 50%;
+}
+
+.login-field span {
+    font-size: 0.9vw;
+    padding-right: 6px;
+}
+
+.login-field input {
+    width: 60%;
+}
+
+.password-field {
+    padding: 10px 12px;
+    width: 50%;
+    display: flex;
+}
+
+.password-field span {
+    padding-right: 6px;
+    font-size: 0.9vw;
+    margin: auto;
+}
+
+.password-field input {
+    width: 55%;
+}
+
+.new-button {
+    width: min-content;
+    padding: 10px;
+    margin-top: 6px;
+    background-color: #444;
+}
+
+.new-button:hover {
+    background-color: #333;
+}
+
+.person-row .new-button {
+    background-color: #333;
+    margin: 4px 16px;
+}
+
+.person-row .new-button:hover {
+    background-color: #444;
+}
+
+.person-row .new-button img {
+    height: 16px;
+}
+
+.account-row .new-button {
+    margin: auto 6px auto 0px;
+    background-color: #444;
+}
+
+.account-row .new-button:hover {
+    background-color: #333;
+}
+
+.account-row .new-button img {
+    height: 12px;
+}
+
+.new-button img {
+    height: 18px
+}
+
+.rotate180 {
+    transform: rotate(180deg)
+}

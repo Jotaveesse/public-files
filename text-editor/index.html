@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<head>
+	<meta charset="UTF-8">
+
+	<link rel="stylesheet" href="text_editor.css">
+	<link rel="stylesheet" href="/~jvs2/scripts/custom_select.css">
+	
+	<script src="/~jvs2/scripts/custom_select.js"></script>
+	<script src="text_editor.js"></script> 
+	<script src="jsdiff.js"></script> 
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jimp/0.16.2/jimp.js"></script>
+	
+	<title>Editor de Texto</title>
+	<link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAU0lEQVQ4jaWTwQoAMAhC/f+f3m6jjbKcQYcgHxoEAFifBUd8IA+xbApgws4kBcgRIqyLNgakojCPAdme7CCL8Q2wbnDtqw7kG1QxqAOl/Gdy33kDo0MGJTiq/sEAAAAASUVORK5CYII=" type="image/x-icon">
+	
+</head>
+<body>
+	<div id="tab_selection">
+		<button id="replace_tab_button" class="tab_button">Replace Text</button>
+		<button id="compare_tab_button" class="tab_button">Compare Text</button>
+		<button id="convert_radix_tab_button" class="tab_button">Convert Radix</button>
+	</div>
+	<div id="replace_text_tab" class="tab_content">
+		<div class="text_areas">
+			<div class="text_section">
+				<div class="text_title">Original Text</div>
+				<textarea class="original_text"></textarea>
+			</div>
+			<div class="text_section">
+				<div class="title_area">
+					<div class="text_title">Final Text</div>
+					<div id="total_matches" class="title_info">0 matches</div>
+				</div>
+				<textarea class="output_text"></textarea>
+			</div>
+			<div class="text_section">
+				<div class="text_title">Text to Replace</div>
+				<textarea class="selected_text"></textarea>
+			</div>
+			<div class="text_section">
+				<div class="text_title">Replace With</div>
+				<textarea class="new_text"></textarea>
+			</div>
+			
+		</div>
+		<div class="options_section">
+			<label class="container">
+			  <input id="replace_case_sensitive" type="checkbox" checked="">Case Sensitive</input>
+			  <span class="checkmark"></span>
+			</label>
+			<label class="container">
+			  <input id="replace_all" type="checkbox" checked="">Replace All</input>
+			  <span class="checkmark"></span>
+			</label>
+			<label class="container">
+			  <input id="replace_sequential" type="checkbox">Sequential Edit</input>
+			  <span class="checkmark"></span>
+			</label>
+		</div>
+		
+		<button id="replace_button" class="execute_button" >Replace</button>
+
+	</div>
+	<div id="compare_text_tab" class="tab_content">
+		<div class="text_areas">
+			<div class="text_section">
+				<div class="text_title">Old Text</div>
+				<textarea class="original_text"></textarea>
+			</div>
+			<div class="text_section">
+				<div class="text_title">New Text</div>
+				<textarea class="compare_text"></textarea>
+			</div>
+			<div class="text_section">
+				<div class="title_area">
+					<div class="text_title">Text Removed</div>
+					<div id="total_removed" class="title_info">0 removed</div>
+				</div>
+				<div id="output1" class="output_text"></div>
+			</div>
+			<div class="text_section">
+				<div class="title_area">
+					<div class="text_title">Text Added</div>
+					<div id="total_added" class="title_info">0 added</div>
+				</div>
+				<div id="output2" class="output_text"></div>
+			</div>
+		</div>
+		<div class="options_section">
+			<label class="container">
+			  <input id="compare_case_sensitive" type="checkbox" checked="">Case Sensitive</input>
+			  <span class="checkmark"></span>
+			</label>
+			<label class="radio_container">Character Compare
+			  <input type="radio" id="char_option" name="compare_option" value="diffChars" checked>
+			  <span class="radio_checkmark"></span>
+			</label>
+			<label class="radio_container">Word Compare
+			  <input type="radio" id="word_option" name="compare_option" value="diffWordsWithSpace">
+			  <span class="radio_checkmark"></span>
+			</label>
+			<label class="radio_container">Line Compare
+			  <input type="radio" id="line_option" name="compare_option" value="diffLines">
+			  <span class="radio_checkmark"></span>
+			</label>
+
+		</div>
+		
+		<button id ="compare_button" class="execute_button">Compare</button>
+
+	</div>
+	
+	<div id="convert_radix_tab" class="tab_content">
+		<div class="text_areas">
+			
+			<div class="text_section large">
+				<div class="text_title">Original Text</div>
+				<textarea class="original_text"></textarea>
+			</div>
+			<div class="text_section large">
+				<div class="title_area">
+					<div class="text_title">Final Text</div>
+					<div id="total_radix_matches" class="title_info">0 matches</div>
+				</div>
+				<textarea class="output_text"></textarea>
+			</div>
+		</div>
+		
+		<div class="format_selectors">
+			<div class="radix_selector">
+				<div>
+					<span>From:</span>
+					<div class="custom-select">
+						<select id="convert_from_select">
+							<option value=2>Binary
+							<option value=8>Octal
+							<option value=10>Decimal
+							<option value=16>Hexadecimal
+							<option value=-1>Other
+						</select>
+					</div>
+				</div>
+				<div>
+					<span id="radix_from_length_span">Radix length:</span>
+					<input type="number" id="radix_from_length"  min="1" max="1000000" value=1>
+				</div>
+				<div style="display:none;">
+					<span id="base_from_span" >Base:</span>
+					<input type="number" id="base_from" min="2" max="36" value=2>
+				</div>
+			</div>
+			<div class="radix_selector">
+				<div>
+					<span>To:</span>
+					<div class="custom-select">
+						<select id="convert_to_select">
+							<option value=2>Binary
+							<option value=8>Octal
+							<option value=10>Decimal
+							<option value=16>Hexadecimal
+							<option value=-1>Other
+						</select>
+					</div>
+				</div>
+				<div>
+					<span id="radix_to_length_span">Radix length:</span>
+					<input type="number" id="radix_to_length" min="1" max="1000000" value=1>
+				</div>
+				<div style="display:none;">
+					<span id="base_to_span">Base:</span>
+					<input type="number" id="base_to" min="2" max="36" value=2>
+				</div>
+			</div>
+		</div>
+		
+		<div class="options_section">
+			<label class="container">
+			  <input id="radix_case_sensitive" type="checkbox">Case Sensitive</input>
+			  <span class="checkmark"></span>
+			</label>
+			<label class="container">
+			  <input id="all_radix_lengths" type="checkbox">All lengths</input>
+			  <span class="checkmark"></span>
+			</label>
+			<label class="container">
+			  <input id="min_radix_size" type="checkbox">Minimum length</input>
+			  <span class="checkmark"></span>
+			</label>
+			
+		</div>
+		
+		<button id="convert_radix_button" class="execute_button">Convert</button>
+
+	</div>
+	
+</body>
+

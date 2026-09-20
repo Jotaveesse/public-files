@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+
+<head>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="file_conversor.css">
+	<link rel="stylesheet" href="custom_select.css">
+
+	<script src="format.js"></script>
+	<script src="helper.js"></script>
+	<script src="custom_select.js"></script>
+	<script src="/ffmpeg/ffmpeg/ffmpeg.js"></script>
+	<script src="/ffmpeg/util/index.js"></script>
+	<script src="file_conversor.js"></script>
+	<script src="file.js"></script>
+	<script src="index.js"></script>
+
+	<title>Conversor de Arquivos
+	</title>
+	<link rel="icon"
+		href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAU0lEQVQ4jaWTwQoAMAhC/f+f3m6jjbKcQYcgHxoEAFifBUd8IA+xbApgws4kBcgRIqyLNgakojCPAdme7CCL8Q2wbnDtqw7kG1QxqAOl/Gdy33kDo0MGJTiq/sEAAAAASUVORK5CYII="
+		type="image/x-icon">
+
+</head>
+
+<body>
+	<div class="main-area">
+		<div id="file-area" class="file-area">
+			<div id="file-list" class="file-list">
+
+
+			</div>
+			<div class="add-button-wrapper">
+				<button id="add-button">
+					+
+				</button>
+			</div>
+		</div>
+
+		<div id="progress-area" class="progress-area">
+			<div class="progress-text">
+				<span style="display:none">0%</span>
+			</div>
+
+			<div class="progress-bar">
+				<div id="general-bar" class="bar" style="display:none"></div>
+			</div>
+		</div>
+
+		<div class="general-button-area">
+
+			<div class="general-button-wrapper">
+				<button id="general-remove-button">
+					Remover Todos
+				</button>
+			</div>
+
+			<div class="general-button-wrapper custom-select">
+				<select id="general-ext-select">
+					<option value="null">Formatos</option>
+				</select>
+			</div>
+
+			<div class="general-button-wrapper">
+				<button id="general-convert-button">
+					Converter Todos
+				</button>
+			</div>
+
+		</div>
+	</div>
+
+	<canvas id="canvas" style="display: none;"></canvas>
+	<template id="file-elem-template">
+		<div class="file-elem">
+			<div class="file-button-wrapper">
+				<button class="file-remove">
+					x
+				</button>
+			</div>
+			<div class="file-name">
+				<span>
+					arquivo.png
+				</span>
+			</div>
+			<div class="file-progress">
+				<div class="file-progress-bar">
+					<div class="bar"></div>
+				</div>
+				<div class="file-progress-text">
+					<span>
+						0%
+					</span>
+				</div>
+			</div>
+			<div class="file-button-wrapper">
+				<button class="file-convert">
+					Converter
+				</button>
+			</div>
+		</div>
+	</template>
+</body>

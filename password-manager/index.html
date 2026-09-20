@@ -1,0 +1,147 @@
+<head>
+  <meta charset="utf-8">
+
+  <title>Password Manager</title>
+  <link href="images/dots.svg" type="image/x-icon" rel="icon">
+  <link href="crypt.css" rel="stylesheet">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/scrypt-js/3.0.1/scrypt.js"
+    integrity="sha512-7mrlNKqsLpZvXY+CpmlAkZ8iNw7GptKUumjFI8N2xvgwWvmbZEeNmntWADkNoqSWJlWg2FMxKGQKy9mCHKlfbw=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="main.js"></script>
+  <script src="crypter.js"></script>
+  <script src="helper.js"></script>
+</head>
+
+<body>
+  <div id="main">
+    <div id="crypt-area">
+
+      <div class="input-section">
+        <div class="text-area-section">
+          <div class="crypt-area-title">Input text</div>
+          <textarea id="input-area"></textarea>
+        </div>
+
+        <div class="file-input-section">
+          <input id="file-input" type="file">
+        </div>
+
+        <div class="password-section">
+          <div class="crypt-area-title">Password</div>
+          <input id="password-area" type="password">
+
+          <button id="crypt-show-button" class="show-button" showing="false">
+            <img src="images/eye-open.svg" />
+          </button>
+
+        </div>
+
+      </div>
+
+      <div class="output-section">
+        <div class="text-area-section">
+          <div class="crypt-area-title">Output text</div>
+          <textarea id="output-area"></textarea>
+        </div>
+
+        <div class="button-section">
+          <button id="display-button">Display</button>
+          <button id="encrypt-button">Encrypt</button>
+          <button id="save-button">Save</button>
+        </div>
+
+        <div id="progress-bar" class="progress-bar">
+          <div id="bar" class="bar"></div>
+        </div>
+
+        <div id="error-message">
+          Erro
+        </div>
+
+      </div>
+    </div>
+
+    <div id="json-area">
+      <div id="json-section">
+
+      </div>
+      <div id="new-person-button" class="new-button">
+        <img class="rotate180" src="images/plus.svg" />
+      </div>
+    </div>
+  </div>
+
+</body>
+
+<template id="person-template">
+  <div class="person-row">
+    <div class="person-title">
+      Pessoa
+    </div>
+
+    <div class="person-buttons">
+      <button class="remove-button">
+        <img src="images/minus.svg" />
+      </button>
+      <button class="dropdown-button">
+        <img class="rotate180" src="images/down-arrow.svg" />
+      </button>
+    </div>
+
+    <div class="person-accounts">
+
+    </div>
+
+    <div class="new-button">
+      <img class="rotate180" src="images/plus.svg" />
+    </div>
+
+
+  </div>
+</template>
+
+<template id="account-template">
+  <div class="account-row">
+    <div class="account-top">
+      <div class="account-title">
+        Conta
+      </div>
+      <button class="remove-button">
+        <img src="images/minus.svg" />
+      </button>
+    </div>
+
+    <div class="account-data">
+      <div class="new-button">
+        <img class="rotate180" src="images/plus.svg" />
+      </div>
+    </div>
+
+  </div>
+</template>
+
+<template id="login-template">
+  <div class="data-row">
+
+    <div class="login-field">
+      <span>Login</span>
+      <input>
+    </div>
+
+    <div class="password-field">
+      <span>Password</span>
+      <input type="password">
+      <button class="show-button" showing="false">
+        <img src="images/eye-open.svg" />
+      </button>
+    </div>
+
+    <button class="remove-button">
+      <img src="images/minus.svg" />
+    </button>
+
+  </div>
+</template>
+
+</html>

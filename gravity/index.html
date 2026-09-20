@@ -1,0 +1,104 @@
+<head>
+	<link rel="stylesheet" href="gravity.css">
+	<script src="gravity.js"></script> 
+	<script src="page.js"></script> 
+	<script src="color-picker.js"></script> 
+	
+	<meta charset="UTF-8">
+	<title id="title">42</title>
+</head>
+<body>
+<div class="body-info" id="body-info">
+	<div id="info-arrow"></div>
+	
+	<div id='info-text'>
+	</div>
+	
+</div>
+<div class="container">
+</div>
+
+<div class="side-menu">
+	<div id="main-menu" class="menu">
+		<div id="spawn" class="menu-item">
+			<div class="item-icon">
+				<img src="planet.png" ></img>
+			</div>
+			<div class="item-text">Spawn</div>
+		</div>
+		<div id="orbits" class="menu-item">
+			<div class="item-icon">
+				<img src="orbit.png" ></img>
+			</div>
+			<div class="item-text">Orbits</div>
+		</div>
+		<div id="bodies" class="menu-item">
+			<div class="item-icon">
+				<img src="planets.png" ></img>
+			</div>
+			<div class="item-text">Bodies</div>
+		</div>
+		<div id="settings" class="menu-item">
+			<div class="item-icon">
+				<img src="options.png" ></img>
+			</div>
+			<div class="item-text">Settings</div>
+		</div>
+	</div>
+	
+	<div id="spawn-menu" class="menu" key="spawn">
+		<div id="spawn-planet" class="spawn-item">
+			<div class="item-icon">
+				<img src="planets.png" ></img>
+			</div>
+			<div class="item-text">Body</div>
+		</div>
+		<div id="spawn-planet-pop" key="body" class="pop-down">
+			<div class="number-input input-section" key="radius">
+				<label for="spawn-planet-radius-input">Radius</label>
+				<input id="spawn-planet-radius-input" class="number" autocomplete="off" placeholder="100" value=50 pattern="[0-9]+"></input>
+				<input class="slider" type="range" min=1 max=100 value=50 autocomplete="off"></input>
+			</div>
+			<div class="number-input input-section" key="density">
+				<label for="spawn-planet-density-input">Density</label>
+				<input id="spawn-planet-density-input" class="number" autocomplete="off" placeholder="100" value=10 pattern="[0-9]+"></input>
+				<input class="slider" type="range" min=1 max=100 value=10 autocomplete="off"</input>
+			</div>
+			<div class="color-picker input-section" key="color">
+				<div class="color-marker"></div>
+				<canvas class="color-canvas" id ="color-picker"></canvas>
+				<div class="hue-marker"></div>
+				<canvas class="hue-canvas" id ="hue-picker"></canvas>
+			</div>
+			<label class="checkbox-input input-section" key="isGhost">Ghost
+				<input id="spawn-planet-ghost-input" class="checkbox" type="checkbox" </input>
+				<span class="checkmark"></span>
+			</label>
+		</div>
+		<div id="spawn-black-hole" class="spawn-item">
+			<div class="item-icon">
+				<img src="black-hole.png" ></img>
+			</div>
+			<div class="item-text">Black Hole</div>
+		</div>
+		<div id="spawn-anti-body" class="spawn-item">
+			<div class="item-icon">
+				<img src="planets.png" ></img>
+			</div>
+			<div class="item-text">Anti-body</div>
+		</div>
+		<div id="spawn-white-hole" class="spawn-item">
+			<div class="item-icon">
+				<img src="options.png" ></img>
+			</div>
+			<div class="item-text">White Hole</div>
+		</div>
+		<div id="spawn-back" class="spawn-item">
+			<div class="item-icon">
+				<img src="back.png" ></img>
+			</div>
+			<div class="item-text">Back</div>
+		</div>
+	</div>
+</div>
+</body>
