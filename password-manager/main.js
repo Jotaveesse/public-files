@@ -1,4 +1,6 @@
-const emptyData = { Person: { Account: [{ username: "", password: "" }] } };
+const emptyData = {
+    Person: { Account: [{ username: "", password: "", backupCodes: [] }] },
+};
 const encryptTemplate = `<nppcrypt version="1016">
 <encryption cipher="rijndael" key-length="32" mode="gcm" aad="true" encoding="base64" />
 <key algorithm="scrypt" N="16384" r="8" p="1" salt="salt_value" />
@@ -82,7 +84,7 @@ window.onload = function () {
                 try {
                     jsonArea.innerHTML = "";
                     jsonData = JSON.parse(decrData);
-                    createPersonElems(jsonData, jsonArea);
+                    createPersonElems(jsonData, jsonArea, false);
                 } catch (error) {
                     displayError(Errors.BAD_JSON);
                 }
@@ -93,7 +95,7 @@ window.onload = function () {
     };
 
     document.getElementById("new-person-button").onclick = function () {
-        createPersonElems(emptyData, jsonArea);
+        createPersonElems(emptyData, jsonArea, true);
     };
 
     document.getElementById("crypt-show-button").onclick = function () {
@@ -107,7 +109,7 @@ window.onload = function () {
     };
 };
 
-function createPersonElems(data, parent) {
+function createPersonElems(data, parent, isNew = false) {
     Object.keys(data).forEach((person) => {
         const personElem = personTemp.content.cloneNode(true);
         const personAccounts = personElem.querySelector(".person-accounts");
@@ -120,17 +122,29 @@ function createPersonElems(data, parent) {
         personTitle.innerHTML = person;
         personTitle.ondblclick = editField;
 
-        //hides the accounts and flips the dropdown
-        dropButton.onclick = function () {
+        function toggleCollapse() {
             toggleHideElem(personAccounts);
             toggleHideElem(newAccountButton);
             toggleHideElem(newAccountButtonWrapper);
 
-            let buttonClasses = this.children[0].classList;
+            let buttonClasses = dropButton.children[0].classList;
             let isRotated = buttonClasses.contains("rotate180");
 
             if (isRotated) buttonClasses.remove("rotate180");
             else buttonClasses.add("rotate180");
+        }
+
+        if (isNew) {
+            toggleHideElem(personAccounts);
+            toggleHideElem(newAccountButton);
+            toggleHideElem(newAccountButtonWrapper);
+            let buttonClasses = dropButton.children[0].classList;
+            buttonClasses.add("rotate180");
+        }
+
+        //hides the accounts and flips the dropdown
+        dropButton.onclick = function () {
+            toggleCollapse();
         };
 
         newAccountButton.onclick = function () {
