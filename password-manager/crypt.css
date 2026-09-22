@@ -40,10 +40,14 @@ textarea {
 }
 
 #main {
-    background-color: #333;
+    background-color: #444;
     height: 100%;
     display: grid;
-    grid-template-columns: 45% 55%;
+    grid-template-columns: 40% 58%;
+    padding: 16px;
+    column-gap: 2%;
+    box-sizing: border-box;
+
 }
 
 #crypt-area {
@@ -51,7 +55,6 @@ textarea {
     color: white;
     height: 100%;
     width: 100%;
-    padding: 16px;
     box-sizing: border-box;
     overflow-y: auto;
 }
@@ -87,26 +90,25 @@ textarea {
     height: 18px;
 }
 
-
-.file-input-section{
-    height:40px;
-    width:min-content;
+.file-input-section {
+    height: 40px;
+    width: min-content;
     /*! padding:10px 0px; */
-    margin-left:auto;
+    margin-left: auto;
     box-sizing: border-box;
 }
 
-#file-input{
-    height:100%;
+#file-input {
+    height: 100%;
 }
 
-#file-input::file-selector-button{
+#file-input::file-selector-button {
     color: white;
     background-color: #444;
-    height:100%;
+    height: 100%;
     border: none;
     border-radius: 4px;
-    padding:4px;
+    padding: 4px;
     font-weight: 800;
     cursor: pointer;
     box-sizing: border-box;
@@ -142,19 +144,19 @@ textarea {
     align-content: flex-start;
 }
 
-#password-area{
+#password-area {
     width: calc(100% - 34px);
-    height:28px;
+    height: 28px;
 }
 
-#crypt-show-button{
-    height:28px;
-    width:28px;
-    margin:0px 0px 0px 6px;
+#crypt-show-button {
+    height: 28px;
+    width: 28px;
+    margin: 0px 0px 0px 6px;
 }
 
-#crypt-show-button img{
-    height:24px;
+#crypt-show-button img {
+    height: 24px;
 }
 
 .button-section {
@@ -183,6 +185,10 @@ textarea {
     height: 100%;
     background-color: #444;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+    row-gap: 4px;
 }
 
 input {
@@ -204,17 +210,25 @@ input {
     padding-top: 6px;
 }
 
+#json-area > .button-wrapper {
+    height: 44px;
+}
+
 .person-row {
     width: 100%;
     height: fit-content;
     background-color: #333;
     display: flex;
     flex-wrap: wrap;
-    padding: 2px 0px;
+    padding: 4px 12px;
     border-radius: 10px;
     border-top: solid 3px #444;
     border-bottom: solid 3px #444;
     box-sizing: border-box;
+}
+
+.person-row > .button-wrapper {
+    height: 44px;
 }
 
 .person-row:first-child {
@@ -223,15 +237,22 @@ input {
 
 .person-row:last-child {
     border-bottom: none;
+    border-radius: 10px 10px 0px 10px;
+}
+
+.person-top {
+    width: 100%;
+    display: flex;
 }
 
 .person-title {
     height: fit-content;
-    width: calc(100% - 92px);
-    margin: auto;
-    padding: 8px 18px;
+    width: calc(100% - 192px);
+    margin: auto 0px;
+    padding: 8px 18px 8px 0px;
     font-size: 1.3vw;
     box-sizing: border-box;
+    flex-grow: 1;
 }
 
 .person-title input {
@@ -243,31 +264,18 @@ input {
 }
 
 .person-buttons {
-    padding: 4px 4px 4px 0px;
-    box-sizing: border-box;
-    margin: auto;
-}
-
-.dropdown-button,
-.remove-button,
-.show-button,
-.new-button {
     background-color: #333;
-    padding: 3px;
+    padding: 3px 0px 3px 3px;
     border-radius: 10px;
     border: none;
     cursor: pointer;
     transition-duration: 0.2s;
+    display: flex;
+    height: 44px;
 }
 
-.dropdown-button:hover,
-.remove-button:hover {
-    background-color: #444;
-}
-
-.dropdown-button img,
-.remove-button img {
-    height: 30px;
+.person-buttons .button-wrapper {
+    height: 100%;
 }
 
 .show-button {
@@ -290,7 +298,6 @@ input {
     width: 100%;
     display: flex;
     flex-wrap: wrap;
-    padding: 0px 16px;
 }
 
 .account-row {
@@ -308,22 +315,12 @@ input {
 .account-top {
     display: flex;
     background-color: #444;
-    width: 30%;
-    padding: 4px 8px 4px 12px;
+    width: 40%;
+    height: 36px;
+    padding: 0px 0px 0px 12px;
     border-radius: 10px 10px 0px 0px;
-}
-
-.account-top .remove-button {
-    background-color: #444;
-    margin-left: auto;
-}
-
-.account-top .remove-button img {
-    height: 22px;
-}
-
-.account-top .remove-button:hover {
-    background-color: #333;
+    box-sizing: border-box;
+    justify-content: space-between;
 }
 
 .account-title {
@@ -340,40 +337,53 @@ input {
     box-sizing: border-box;
 }
 
+.account-top .button-wrapper {
+    height: 100%;
+}
+
 .account-data {
-    background-color: #444;
     width: 100%;
     display: flex;
     flex-wrap: wrap;
-    border-radius: 0px 10px 10px 10px;
+    justify-content: flex-end;
+}
+
+.account-data > * {
+    height: 44px;
 }
 
 .data-row {
-    width: calc(100% - 38px);
-    background-color: transparent;
+    width: 100%;
+    background-color: #444;
     display: flex;
     flex-wrap: nowrap;
     border-radius: 10px;
+    border-radius: 0px 10px 0px 10px;
 }
 
-.data-row .remove-button {
+.input-area {
+    width: 100%;
+    display: flex;
+    flex-wrap: nowrap;
+}
+
+.data-row .button-wrapper {
+    box-sizing: border-box;
     background-color: #444;
-    height: 32px;
-    width: 36px;
-    margin: auto;
+    height: 100%;
+    border-radius: 10px;
 }
 
 .data-row .remove-button:hover {
     background-color: #333;
 }
 
-.data-row .remove-button img {
-    height: 19px;
-}
-
 .login-field {
-    padding: 10px 12px;
+    padding: 8px 12px;
     width: 50%;
+    display: flex;
+    align-items: center;
+    column-gap: 8px;
 }
 
 .login-field span {
@@ -383,12 +393,15 @@ input {
 
 .login-field input {
     width: 60%;
+    height: 100%;
 }
 
 .password-field {
-    padding: 10px 12px;
+    padding: 8px 12px;
     width: 50%;
     display: flex;
+    align-items: center;
+    column-gap: 8px;
 }
 
 .password-field span {
@@ -399,49 +412,68 @@ input {
 
 .password-field input {
     width: 55%;
+    height: 100%;
 }
 
-.new-button {
-    width: min-content;
-    padding: 10px;
-    margin-top: 6px;
+.account-data > .button-wrapper {
+    border-radius: 0px 0px 10px 10px;
     background-color: #444;
+    aspect-ratio: 1/1;
+    box-sizing: border-box;
 }
 
-.new-button:hover {
+#json-area > .button-wrapper {
+    border-radius: 10px;
+    background-color: #333;
+    aspect-ratio: 1/1;
+    box-sizing: border-box;
+}
+
+.button-wrapper {
+    aspect-ratio: 1/1;
+    box-sizing: border-box;
+    padding: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.button-wrapper img {
+    height: 100%;
+    padding: 28%;
+    box-sizing: border-box;
+}
+
+.button-wrapper > * {
+    background-color: #444;
+    height: 100%;
+    aspect-ratio: 1/1;
+    box-sizing: border-box;
+    border-radius: 7px;
+    border: none;
+    cursor: pointer;
+    transition-duration: 0.2s;
+    padding: 0px;
+}
+
+.show-button {
+    border: none;
+    cursor: pointer;
+    transition-duration: 0.2s;
+}
+
+.button-wrapper > *:hover {
     background-color: #333;
 }
 
-.person-row .new-button {
-    background-color: #333;
-    margin: 4px 16px;
+.inverted-button {
+    background-color: #333 !important;
 }
 
-.person-row .new-button:hover {
-    background-color: #444;
-}
-
-.person-row .new-button img {
-    height: 16px;
-}
-
-.account-row .new-button {
-    margin: auto 6px auto 0px;
-    background-color: #444;
-}
-
-.account-row .new-button:hover {
-    background-color: #333;
-}
-
-.account-row .new-button img {
-    height: 12px;
-}
-
-.new-button img {
-    height: 18px
+.inverted-button:hover {
+    background-color: #444 !important;
 }
 
 .rotate180 {
-    transform: rotate(180deg)
+    transform: rotate(180deg);
 }
