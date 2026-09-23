@@ -205,6 +205,7 @@ function createLoginElems(account, parent) {
 
         const removeButton = loginElem.querySelector(".remove-button");
         const showButton = loginElem.querySelector(".show-button");
+        const copyButton = loginElem.querySelector(".copy-button");
         const loginField = loginElem.querySelector(".login-field");
         const passwordField = loginElem.querySelector(".password-field");
 
@@ -220,6 +221,10 @@ function createLoginElems(account, parent) {
 
         showButton.onclick = function () {
             togglePassword(this, passwordInput);
+        };
+
+        copyButton.onclick = async function () {
+            await navigator.clipboard.writeText(passwordInput.value);
         };
 
         //inserts before the new button
