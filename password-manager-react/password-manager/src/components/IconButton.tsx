@@ -8,6 +8,7 @@ interface IconButtonProps {
     size?: "sm" | "lg";
     alt?: string;
     style?: React.CSSProperties;
+    outerPadding?: boolean;
     onClick?: () => void;
 }
 
@@ -18,13 +19,14 @@ const IconButton = ({
     size = "sm",
     alt,
     style,
+    outerPadding = true,
     onClick,
 }: IconButtonProps) => {
     const wrapperVariant =
         variant === "primary" ? "bg-primary" : "bg-secondary";
     return (
         <div
-            className={wrapperVariant + " p-1 rounded-3"}
+            className={`${wrapperVariant} ${outerPadding ? "p-1" : "p-0"} rounded-3`}
             style={{ width: "min-content", height: "min-content" }}
         >
             <Button
@@ -33,15 +35,14 @@ const IconButton = ({
                 size={size}
                 aria-label={alt}
                 onClick={onClick}
-                style={style}
-                className="d-flex align-items-center justify-content-center p-2 rounded-3"
+                style={{ height: "2rem", ...style }}
+                className="d-flex align-items-center justify-content-center p-1 rounded-3"
             >
                 <Image
                     src={icon}
                     alt=""
                     style={{
-                        width: "1.5em",
-                        height: "1.5em",
+                        height: "100%",
                         objectFit: "contain",
                     }}
                 />

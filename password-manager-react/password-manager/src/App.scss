@@ -3,7 +3,20 @@ $secondary: #333333;
 $font-family-base: 'Helvetica', sans-serif;
 $btn-font-weight: 800;
 
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+
+$custom-font-sizes: (
+    7: 0.75rem
+);
+
+$font-sizes: map-merge($font-sizes, $custom-font-sizes);
+
 @import "bootstrap/scss/bootstrap.scss";
+
+.btn{
+    font-size:small;
+}
 
 .btn-primary {
   --bs-btn-hover-bg: #333333; 

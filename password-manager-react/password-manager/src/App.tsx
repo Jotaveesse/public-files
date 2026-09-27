@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { Button, Form } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import IconButton from "./components/IconButton";
 import imagePlus from "./assets/plus.svg";
 import PasswordInput from "./components/PasswordInput";
+import FileInput from "./components/FileInput";
+import TextArea from "./components/TextArea";
 
 function App() {
     const [textInput, setTextInput] = useState("");
@@ -30,26 +32,22 @@ function App() {
     return (
         <>
             <div id="main" className="bg-primary d-flex p-2 vh-100 vw-100">
-                <div id="crypt-area" className="" style={{ width: "40%" }}>
-                    <div className="input-section">
-                        <Form.Group controlId="formFileInput" className="">
-                            <Form.Label htmlFor="textInput">
-                                Input text
-                            </Form.Label>
-                            <Form.Control
-                                value={textInput}
-                                type="text"
-                                id="textInput"
-                                onChange={(e) => setTextInput(e.target.value)}
-                            />
-                        </Form.Group>
+                <div
+                    id="crypt-area"
+                    className="d-flex flex-column"
+                    style={{ width: "40%" }}
+                >
+                    <div className="flex-grow-1 d-flex flex-column">
+                        <TextArea
+                            value={textInput}
+                            onChange={(e) => setTextInput(e.target.value)}
+                            title="Input text"
+                        ></TextArea>
 
-                        <Form.Group controlId="formFileInput" className="">
-                            <Form.Control
-                                type="file"
-                                onChange={handleFileUpload}
-                            />
-                        </Form.Group>
+                        <FileInput
+                            className="ms-auto w-75"
+                            onChange={handleFileUpload}
+                        />
 
                         <PasswordInput
                             title="Password"
@@ -58,26 +56,20 @@ function App() {
                         ></PasswordInput>
                     </div>
 
-                    <div className="output-section">
-                        <Form.Group controlId="formOutput" className="">
-                            <Form.Label htmlFor="textOutput">
-                                Output text
-                            </Form.Label>
-                            <Form.Control
-                                value={textOutput}
-                                type="text"
-                                id="textOutput"
-                                onChange={(e) => setTextOutput(e.target.value)}
-                            />
-                        </Form.Group>
+                    <div className="flex-grow-1 d-flex flex-column">
+                        <TextArea
+                            value={textOutput}
+                            onChange={(e) => setTextOutput(e.target.value)}
+                            title="Output text"
+                        ></TextArea>
 
-                        <div className="button-section">
+                        <div className="d-flex">
                             <Button variant="secondary">Decrypt</Button>
                             <Button variant="secondary">Encrypt</Button>
                             <Button variant="secondary">Download</Button>
                         </div>
 
-                        <div className="progress-section">
+                        <div className="d-flex flex-column">
                             <div id="progress-bar" className="progress-bar">
                                 <div id="bar" className="bar"></div>
                             </div>
