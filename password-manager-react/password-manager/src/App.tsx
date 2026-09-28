@@ -5,11 +5,14 @@ import imagePlus from "./assets/plus.svg";
 import PasswordInput from "./components/PasswordInput";
 import FileInput from "./components/FileInput";
 import TextArea from "./components/TextArea";
+import LoadingBar from "./components/LoadingBar";
 
 function App() {
     const [textInput, setTextInput] = useState("");
     const [textOutput, setTextOutput] = useState("");
     const [passwordInput, setPasswordInput] = useState("");
+    const [progressPerc, setProgressPerc] = useState(0);
+    const [errorMessage, setErrorMessage] = useState("");
 
     const handleFileUpload = function (e: React.ChangeEvent<HTMLInputElement>) {
         const file = e.target.files?.[0];
@@ -45,7 +48,7 @@ function App() {
                         ></TextArea>
 
                         <FileInput
-                            className="ms-auto w-75"
+                            className="ms-auto w-50"
                             onChange={handleFileUpload}
                         />
 
@@ -69,12 +72,17 @@ function App() {
                             <Button variant="secondary">Download</Button>
                         </div>
 
-                        <div className="d-flex flex-column">
-                            <div id="progress-bar" className="progress-bar">
-                                <div id="bar" className="bar"></div>
-                            </div>
-
-                            <div id="error-message">Error</div>
+                        <div className="d-flex w-100">
+                            {errorMessage === "" ? (
+                                <LoadingBar
+                                    style={{ height: "1.5rem" }}
+                                    value={progressPerc}
+                                ></LoadingBar>
+                            ) : (
+                                <div className="text-white fw-bold text-align-center ms-auto me-auto">
+                                    {errorMessage}
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

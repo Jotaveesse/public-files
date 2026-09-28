@@ -39,10 +39,12 @@ const FileInput = ({ className, onChange, ...rest }: FileInputProps) => {
                 onChange={handleFileChange}
                 style={{ display: "none" }}
             />
+
             <Button variant="primary" onClick={handleButtonClick}>
                 Browse...
             </Button>
-            <Form.Text className="flex-grow-1 d-flex align-items-center bg-secondary fw-bold text-white">
+
+            <Form.Text className="flex-grow-1 mt-auto mb-auto align-items-center bg-secondary fw-bold text-white text-truncate d-inline-block">
                 {fileName}
             </Form.Text>
         </Form.Group>
