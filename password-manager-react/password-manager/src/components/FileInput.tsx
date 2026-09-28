@@ -29,7 +29,7 @@ const FileInput = ({ className, onChange, ...rest }: FileInputProps) => {
 
     return (
         <Form.Group
-            className={`d-flex p-2 bg-secondary rounded-2 column-gap-2 ${className}`}
+            className={`d-flex p-1 bg-secondary rounded-2 column-gap-2 ${className}`}
             {...rest}
         >
             <Form.Control

@@ -31,13 +31,13 @@ function App() {
 
     return (
         <>
-            <div id="main" className="bg-primary d-flex p-2 vh-100 vw-100">
+            <div id="main" className="bg-primary d-flex p-3 vh-100 vw-100">
                 <div
                     id="crypt-area"
-                    className="d-flex flex-column"
+                    className="d-flex flex-column row-gap-2"
                     style={{ width: "40%" }}
                 >
-                    <div className="flex-grow-1 d-flex flex-column">
+                    <div className="flex-grow-1 d-flex flex-column row-gap-2">
                         <TextArea
                             value={textInput}
                             onChange={(e) => setTextInput(e.target.value)}
@@ -56,14 +56,14 @@ function App() {
                         ></PasswordInput>
                     </div>
 
-                    <div className="flex-grow-1 d-flex flex-column">
+                    <div className="flex-grow-1 d-flex flex-column row-gap-2">
                         <TextArea
                             value={textOutput}
                             onChange={(e) => setTextOutput(e.target.value)}
                             title="Output text"
                         ></TextArea>
 
-                        <div className="d-flex">
+                        <div className="d-flex ms-auto column-gap-2">
                             <Button variant="secondary">Decrypt</Button>
                             <Button variant="secondary">Encrypt</Button>
                             <Button variant="secondary">Download</Button>

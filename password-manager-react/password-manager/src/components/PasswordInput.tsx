@@ -22,7 +22,7 @@ const PasswordInput = ({ value, title, id, onChange }: PasswordInputProps) => {
             <Form.Label htmlFor={id} className="fw-bold text-white">
                 {title}
             </Form.Label>
-            <Form.Group className="d-flex">
+            <Form.Group className="d-flex column-gap-2">
                 <Form.Control
                     className="flex-grow-1 bg-secondary border-0 text-white fs-7 fw-bold"
                     value={value}
