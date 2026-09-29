@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Button } from "react-bootstrap";
 import IconButton from "./components/IconButton";
-import imagePlus from "./assets/plus.svg";
+import ImagePlus from "./assets/plus.svg";
 import PasswordInput from "./components/PasswordInput";
 import FileInput from "./components/FileInput";
 import TextArea from "./components/TextArea";
 import LoadingBar from "./components/LoadingBar";
+import PersonRow from "./components/PersonRow";
+import { useData } from "./DataContext";
 
 function App() {
     const [textInput, setTextInput] = useState("");
@@ -13,6 +15,8 @@ function App() {
     const [passwordInput, setPasswordInput] = useState("");
     const [progressPerc, setProgressPerc] = useState(0);
     const [errorMessage, setErrorMessage] = useState("");
+
+    const { currentData, createPerson } = useData();
 
     const handleFileUpload = function (e: React.ChangeEvent<HTMLInputElement>) {
         const file = e.target.files?.[0];
@@ -34,7 +38,10 @@ function App() {
 
     return (
         <>
-            <div id="main" className="bg-primary d-flex p-3 vh-100 vw-100">
+            <div
+                id="main"
+                className="bg-primary d-flex column-gap-3 p-3 vh-100 vw-100 text-white fw-bold"
+            >
                 <div
                     id="crypt-area"
                     className="d-flex flex-column row-gap-2"
@@ -55,6 +62,7 @@ function App() {
                         <PasswordInput
                             title="Password"
                             value={passwordInput}
+                            variant="secondary"
                             onChange={(e) => setPasswordInput(e.target.value)}
                         ></PasswordInput>
                     </div>
@@ -79,7 +87,7 @@ function App() {
                                     value={progressPerc}
                                 ></LoadingBar>
                             ) : (
-                                <div className="text-white fw-bold text-align-center ms-auto me-auto">
+                                <div className="fw-bold text-align-center ms-auto me-auto">
                                     {errorMessage}
                                 </div>
                             )}
@@ -87,14 +95,19 @@ function App() {
                     </div>
                 </div>
 
-                <div id="json-area" className="flex-grow-1">
-                    <div id="json-section"></div>
+                <div className="flex-grow-1 d-flex flex-column row-gap-2 h-100">
+                    <div className="d-flex flex-column row-gap-2 overflow-y-scroll">
+                        {Object.values(currentData.people).map((person) => (
+                            <PersonRow person={person}></PersonRow>
+                        ))}
+                    </div>
 
                     <IconButton
                         title="Add New Person"
-                        icon={imagePlus}
+                        icon={ImagePlus}
                         variant="secondary"
-                        size="sm"
+                        className="ms-auto"
+                        onClick={() => createPerson()}
                     ></IconButton>
                 </div>
             </div>
@@ -140,118 +153,6 @@ function App() {
                         title="Add New Backup Code"
                     >
                         <img src="assets/plus.svg" />
-                    </div>
-                </div>
-            </template>
-
-            <template id="person-template">
-                <div className="person-row">
-                    <div className="person-top">
-                        <div className="person-title">Person</div>
-
-                        <div className="person-buttons">
-                            <div className="button-wrapper">
-                                <button
-                                    className="remove-button inverted-button"
-                                    title="Remove Person"
-                                >
-                                    <img src="assets/minus.svg" />
-                                </button>
-                            </div>
-
-                            <div className="button-wrapper">
-                                <button
-                                    className="dropdown-button inverted-button"
-                                    title="Expand/Collapse"
-                                >
-                                    <img
-                                        className="rotate180"
-                                        src="assets/down-arrow.svg"
-                                    />
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="person-accounts"></div>
-                    <div className="button-wrapper">
-                        <div
-                            className="new-button inverted-button"
-                            title="Add New Account"
-                        >
-                            <img className="rotate180" src="assets/plus.svg" />
-                        </div>
-                    </div>
-                </div>
-            </template>
-
-            <template id="account-template">
-                <div className="account-row">
-                    <div className="account-top">
-                        <div className="account-title">Account</div>
-                        <div className="button-wrapper">
-                            <button
-                                className="remove-button"
-                                title="Remove Account"
-                            >
-                                <img src="assets/minus.svg" />
-                            </button>
-                        </div>
-                    </div>
-
-                    <div className="account-data">
-                        <div className="button-wrapper new-account-button">
-                            <div className="new-button" title="Add New Login">
-                                <img
-                                    className="rotate180"
-                                    src="assets/plus.svg"
-                                />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </template>
-
-            <template id="login-template">
-                <div className="data-row">
-                    <div className="input-area">
-                        <div className="login-field">
-                            <span>Login</span>
-                            <input></input>
-                        </div>
-
-                        <div className="password-field">
-                            <span>Password</span>
-                            <input type="password"></input>
-                            <button
-                                className="show-button"
-                                title="Show Password"
-                            >
-                                <img src="assets/eye-open.svg" />
-                            </button>
-                        </div>
-                        <div className="button-wrapper">
-                            <button
-                                className="copy-button"
-                                title="Copy Password"
-                            >
-                                <img src="assets/copy.svg" />
-                            </button>
-                        </div>
-                        <div className="button-wrapper">
-                            <button
-                                className="codes-button"
-                                title="See Backup Codes"
-                            >
-                                <img src="assets/safe.svg" />
-                            </button>
-                        </div>
-                    </div>
-
-                    <div className="button-wrapper">
-                        <button className="remove-button" title="Remove Login">
-                            <img src="assets/minus.svg" />
-                        </button>
                     </div>
                 </div>
             </template>

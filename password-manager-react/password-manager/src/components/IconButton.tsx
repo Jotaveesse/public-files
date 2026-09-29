@@ -1,12 +1,9 @@
 import Image from "react-bootstrap/Image";
 import Button from "react-bootstrap/Button";
 
-interface IconButtonProps {
+interface IconButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     icon: string;
-    title?: string;
-    variant?: string;
-    size?: "sm" | "lg";
-    alt?: string;
+    variant?: "primary" | "secondary";
     style?: React.CSSProperties;
     outerPadding?: boolean;
     onClick?: () => void;
@@ -14,33 +11,29 @@ interface IconButtonProps {
 
 const IconButton = ({
     icon,
-    title,
     variant = "primary",
-    size = "sm",
-    alt,
+    className,
     style,
     outerPadding = true,
     onClick,
+    ...rest
 }: IconButtonProps) => {
     const wrapperVariant =
         variant === "primary" ? "bg-primary" : "bg-secondary";
     return (
         <div
-            className={`${wrapperVariant} ${outerPadding ? "p-1" : "p-0"} rounded-3`}
+            className={`${wrapperVariant} ${outerPadding ? "p-1" : "p-0"} rounded-3 ${className}`}
             style={{ width: "min-content", height: "min-content" }}
         >
             <Button
-                title={title}
                 variant={variant}
-                size={size}
-                aria-label={alt}
                 onClick={onClick}
-                style={{ height: "2rem", ...style }}
-                className="d-flex align-items-center justify-content-center p-1 rounded-3"
+                style={{ height: "2.2rem", ...style }}
+                className="d-flex align-items-center justify-content-center p-2 rounded-3"
+                {...rest}
             >
                 <Image
                     src={icon}
-                    alt=""
                     style={{
                         height: "100%",
                         objectFit: "contain",
