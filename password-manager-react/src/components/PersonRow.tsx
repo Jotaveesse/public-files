@@ -14,13 +14,12 @@ interface PersonRowProps extends React.HTMLAttributes<HTMLElement> {
 }
 
 const PersonRow = ({ person, className, style, ...rest }: PersonRowProps) => {
-    const [expanded, setExpanded] = useState(true);
+    const [expanded, setExpanded] = useState(false);
     const [editingName, setEditingName] = useState(false);
     const personNameInput = useRef<HTMLInputElement>(null);
     const personNameText = useRef<HTMLDivElement>(null);
 
-    const { currentData, updatePersonName, removePerson, createAccount } =
-        useData();
+    const { updatePersonName, removePerson, createAccount } = useData();
 
     const handleExpandClick = function () {
         setExpanded(!expanded);
@@ -54,9 +53,7 @@ const PersonRow = ({ person, className, style, ...rest }: PersonRowProps) => {
                     className="bg-primary fs-5 p-1 border-0 rounded-3 h-75 m-auto text-white fw-bold"
                     style={{ display: editingName ? "block" : "none" }}
                     onBlur={handlePersonBlur}
-                    onChange={(e) =>
-                        updatePersonName(person.id, e.target.value)
-                    }
+                    onChange={(e) => updatePersonName(person, e.target.value)}
                 ></Form.Control>
 
                 <div
@@ -73,7 +70,7 @@ const PersonRow = ({ person, className, style, ...rest }: PersonRowProps) => {
                         icon={ImageMinus}
                         title="Remove Person"
                         variant="secondary"
-                        onClick={() => removePerson(person.id)}
+                        onClick={() => removePerson(person)}
                     ></IconButton>
 
                     <IconButton
@@ -87,9 +84,10 @@ const PersonRow = ({ person, className, style, ...rest }: PersonRowProps) => {
 
             {expanded && (
                 <div className="person-accounts">
-                    {person.accountIds.map((accountId) => (
+                    {person.accounts.map((account) => (
                         <AccountRow
-                            account={currentData.accounts[accountId]}
+                            key={account.id}
+                            account={account}
                         ></AccountRow>
                     ))}
                 </div>
@@ -100,7 +98,7 @@ const PersonRow = ({ person, className, style, ...rest }: PersonRowProps) => {
                 title="Add New Account"
                 variant="secondary"
                 outerPadding={false}
-                onClick={() => createAccount(person.id)}
+                onClick={() => createAccount(person)}
             ></IconButton>
         </div>
     );

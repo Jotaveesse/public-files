@@ -1,58 +1,101 @@
 import React, { createContext, useContext, useState } from "react";
 
-// 1. Define your Types
 export type Credentials = {
-    id: number;
-    accountId: number;
+    id: string;
     username: string;
     password: string;
     backupCodes: string[];
 };
 
-export type Account = {
-    id: number;
-    personId: number;
-    name: string;
-    credentialIds: number[];
-};
+export type Account = { id: string; name: string; credentials: Credentials[] };
+export type Person = { id: string; name: string; accounts: Account[] };
+export type Data = { version: 1; people: Person[] };
 
-export type Person = {
-    id: number;
-    name: string;
-    accountIds: number[];
-};
-
-export type Data = {
-    people: Record<number, Person>;
-    accounts: Record<number, Account>;
-    credentials: Record<number, Credentials>;
-};
+type EditableCredentialField = Exclude<keyof Credentials, "id">;
 
 // 2. Define the Context structure
 interface DataContextType {
     currentData: Data;
     setCurrentData: React.Dispatch<React.SetStateAction<Data>>;
     sortCurrentData: () => void;
-    removePerson: (personId: number) => void;
-    removeAccount: (accountId: number) => void;
-    removeCredentials: (credentialId: number) => void;
+    removePerson: (person: Person) => void;
+    removeAccount: (account: Account) => void;
+    removeCredentials: (credential: Credentials) => void;
     createPerson: () => void;
-    createAccount: (personId: number) => void;
-    createCredentials: (accountId: number) => void;
-    updatePersonName: (personId: number, newName: string) => void;
-    updateAccountName: (accountId: number, newName: string) => void;
-    updateCredential: (
-        credentialId: number,
-        field: keyof Credentials,
-        value: any,
+    createAccount: (person: Person) => void;
+    createCredentials: (account: Account) => void;
+    updatePersonName: (person: Person, newName: string) => void;
+    updateAccountName: (account: Account, newName: string) => void;
+    updateCredential: <K extends EditableCredentialField>(
+        credential: Credentials,
+        field: K,
+        value: Credentials[K],
     ) => void;
 }
 
 const emptyData: Data = {
-    people: {},
-    accounts: {},
-    credentials: {},
+    people: [],
+    version: 1,
 };
+
+// ==========================================
+// HELPERS (pure, outside the component)
+// ==========================================
+
+const generateId = (): string => crypto.randomUUID();
+
+const makeCredential = (): Credentials => ({
+    id: generateId(),
+    username: "",
+    password: "",
+    backupCodes: [],
+});
+
+const makeAccount = (): Account => ({
+    id: generateId(),
+    name: "New Account",
+    credentials: [makeCredential()],
+});
+
+const makePerson = (): Person => ({
+    id: generateId(),
+    name: "New Person",
+    accounts: [makeAccount()],
+});
+
+/**
+ * Applies `fn` to every account. Only the people whose accounts actually
+ * changed get a new object, so untouched people keep the same reference.
+ */
+const mapAccounts = (data: Data, fn: (account: Account) => Account): Data => ({
+    ...data,
+    people: data.people.map((person) => {
+        const accounts = person.accounts.map(fn);
+        const changed = accounts.some((a, i) => a !== person.accounts[i]);
+        return changed ? { ...person, accounts } : person;
+    }),
+});
+
+const cmp = (a: string, b: string) =>
+    a.localeCompare(b, undefined, { sensitivity: "base" });
+
+/** Returns a sorted copy at all three levels. Never mutates its input. */
+export const sortData = (data: Data): Data => ({
+    ...data,
+    people: [...data.people]
+        .sort((a, b) => cmp(a.name, b.name))
+        .map((person) => ({
+            ...person,
+            accounts: [...person.accounts]
+                .sort((a, b) => cmp(a.name, b.name))
+                .map((account) => ({
+                    ...account,
+                    credentials: [...account.credentials].sort((a, b) =>
+                        cmp(a.username, b.username),
+                    ),
+                })),
+        })),
+});
 
 // 3. Create the Context
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -60,252 +103,135 @@ const DataContext = createContext<DataContextType | undefined>(undefined);
 export const DataProvider = ({ children }: { children: React.ReactNode }) => {
     const [currentData, setCurrentData] = useState<Data>(emptyData);
 
-    // Simple helper to generate unique numeric IDs
-    const generateId = () => Date.now() + Math.floor(Math.random() * 1000);
-
-    const sortCurrentData = () => {
-        setCurrentData((prev) => {
-            const sortedPeople = Object.values(prev.people).sort((a, b) =>
-                a.name.localeCompare(b.name),
-            );
-            const sortedAccounts = Object.values(prev.accounts).sort((a, b) =>
-                a.name.localeCompare(b.name),
-            );
-            const sortedCredentials = Object.values(prev.credentials).sort(
-                (a, b) => a.username.localeCompare(b.username),
-            );
-
-            return {
-                ...prev,
-                people: sortedPeople.reduce(
-                    (acc, person) => ({ ...acc, [person.id]: person }),
-                    {},
-                ),
-                accounts: sortedAccounts.reduce(
-                    (acc, account) => ({ ...acc, [account.id]: account }),
-                    {},
-                ),
-                credentials: sortedCredentials.reduce(
-                    (acc, credential) => ({
-                        ...acc,
-                        [credential.id]: credential,
-                    }),
-                    {},
-                ),
-            };
-        });
-    };
+    const sortCurrentData = () => setCurrentData((prev) => sortData(prev));
 
     // ==========================================
-    // CREATE METHODS
+    // CREATE METHODS (each is one atomic update)
     // ==========================================
 
     const createPerson = () => {
-        const newId = generateId();
-        setCurrentData((prev) => {
-            return {
-                ...prev,
-                people: {
-                    ...prev.people,
-                    [newId]: { id: newId, name: "New Person", accountIds: [] },
-                },
-            };
-        });
-
-        createAccount(newId);
+        const newPerson = makePerson();
+        setCurrentData((prev) => ({
+            ...prev,
+            people: [...prev.people, newPerson],
+        }));
     };
 
-    const createAccount = (personId: number) => {
-        const newId = generateId();
-        setCurrentData((prev) => {
-            const newAccount = {
-                id: newId,
-                personId: personId,
-                name: "New Account",
-                credentialIds: [],
-            };
-
-            return {
-                ...prev,
-                // Add the new account to the dictionary
-                accounts: {
-                    ...prev.accounts,
-                    [newId]: newAccount,
-                },
-                // Link the new account ID to the parent person
-                people: {
-                    ...prev.people,
-                    [personId]: {
-                        ...prev.people[personId],
-                        accountIds: [
-                            ...prev.people[personId].accountIds,
-                            newId,
-                        ],
-                    },
-                },
-            };
-        });
-
-        createCredentials(newId);
+    const createAccount = (person: Person) => {
+        const newAccount = makeAccount();
+        setCurrentData((prev) => ({
+            ...prev,
+            people: prev.people.map((p) =>
+                p.id === person.id
+                    ? { ...p, accounts: [...p.accounts, newAccount] }
+                    : p,
+            ),
+        }));
     };
 
-    const createCredentials = (accountId: number) => {
-        setCurrentData((prev) => {
-            const newId = generateId();
-            const newCredential = {
-                id: newId,
-                accountId: accountId,
-                username: "",
-                password: "",
-                backupCodes: [],
-            };
-
-            return {
-                ...prev,
-                // Add new credentials to the dictionary
-                credentials: {
-                    ...prev.credentials,
-                    [newId]: newCredential,
-                },
-                // Link the new credential ID to the parent account
-                accounts: {
-                    ...prev.accounts,
-                    [accountId]: {
-                        ...prev.accounts[accountId],
-                        credentialIds: [
-                            ...prev.accounts[accountId].credentialIds,
-                            newId,
-                        ],
-                    },
-                },
-            };
-        });
+    const createCredentials = (account: Account) => {
+        const newCredential = makeCredential();
+        setCurrentData((prev) =>
+            mapAccounts(prev, (acc) =>
+                acc.id === account.id
+                    ? {
+                          ...acc,
+                          credentials: [...acc.credentials, newCredential],
+                      }
+                    : acc,
+            ),
+        );
     };
 
     // ==========================================
     // REMOVE METHODS
     // ==========================================
 
-    const removePerson = (personId: number) => {
-        setCurrentData((prev) => {
-            const { [personId]: _, ...remainingPeople } = prev.people;
-
-            // Note: In a production app, you might also want to loop through this person's
-            // accountIds and delete those accounts and credentials to free up memory (Cascading Delete).
-            return {
-                ...prev,
-                people: remainingPeople,
-            };
-        });
+    const removePerson = (person: Person) => {
+        setCurrentData((prev) => ({
+            ...prev,
+            people: prev.people.filter((p) => p.id !== person.id),
+        }));
     };
 
-    const removeAccount = (accountId: number) => {
-        setCurrentData((prev) => {
-            const accountToDelete = prev.accounts[accountId];
-            if (!accountToDelete) return prev; // Safety check
-            const personId = accountToDelete.personId;
-
-            // 1. Remove the accountId from the Person's array
-            const updatedPerson = {
-                ...prev.people[accountToDelete.personId],
-                accountIds: prev.people[personId].accountIds.filter(
-                    (id) => id !== accountId,
-                ),
-            };
-
-            // 2. Remove the Account from the accounts dictionary
-            const { [accountId]: _, ...remainingAccounts } = prev.accounts;
-
-            // 3. Remove all associated Credentials to prevent memory leaks
-            const remainingCredentials = { ...prev.credentials };
-            accountToDelete.credentialIds.forEach((credId) => {
-                delete remainingCredentials[credId];
-            });
-
-            return {
-                ...prev,
-                people: {
-                    ...prev.people,
-                    [personId]: updatedPerson,
-                },
-                accounts: remainingAccounts,
-                credentials: remainingCredentials, // Fixed from your previous snippet
-            };
-        });
+    const removeAccount = (account: Account) => {
+        setCurrentData((prev) => ({
+            ...prev,
+            people: prev.people.map((p) =>
+                p.accounts.some((a) => a.id === account.id)
+                    ? {
+                          ...p,
+                          accounts: p.accounts.filter(
+                              (a) => a.id !== account.id,
+                          ),
+                      }
+                    : p,
+            ),
+        }));
     };
 
-    const removeCredentials = (credentialId: number) => {
-        setCurrentData((prev) => {
-            const accountId = prev.credentials[credentialId].accountId;
-            // 1. Remove credentialId from the parent Account's array
-            const updatedAccount = {
-                ...prev.accounts[accountId],
-                credentialIds: prev.accounts[accountId].credentialIds.filter(
-                    (id) => id !== credentialId,
-                ),
-            };
-
-            // 2. Remove the credential from the credentials dictionary
-            const { [credentialId]: _, ...remainingCredentials } =
-                prev.credentials;
-
-            return {
-                ...prev,
-                accounts: {
-                    ...prev.accounts,
-                    [accountId]: updatedAccount,
-                },
-                credentials: remainingCredentials,
-            };
-        });
+    const removeCredentials = (credential: Credentials) => {
+        setCurrentData((prev) =>
+            mapAccounts(prev, (acc) =>
+                acc.credentials.some((c) => c.id === credential.id)
+                    ? {
+                          ...acc,
+                          credentials: acc.credentials.filter(
+                              (c) => c.id !== credential.id,
+                          ),
+                      }
+                    : acc,
+            ),
+        );
     };
 
     // ==========================================
     // UPDATE METHODS
     // ==========================================
 
-    const updatePersonName = (personId: number, newName: string) => {
+    const updatePersonName = (person: Person, newName: string) => {
         setCurrentData((prev) => ({
             ...prev,
-            people: {
-                ...prev.people,
-                [personId]: { ...prev.people[personId], name: newName },
-            },
+            people: prev.people.map((p) =>
+                p.id === person.id ? { ...p, name: newName } : p,
+            ),
         }));
     };
 
-    const updateAccountName = (accountId: number, newName: string) => {
-        setCurrentData((prev) => ({
-            ...prev,
-            accounts: {
-                ...prev.accounts,
-                [accountId]: { ...prev.accounts[accountId], name: newName },
-            },
-        }));
+    const updateAccountName = (account: Account, newName: string) => {
+        setCurrentData((prev) =>
+            mapAccounts(prev, (acc) =>
+                acc.id === account.id ? { ...acc, name: newName } : acc,
+            ),
+        );
     };
 
-    const updateCredential = (
-        credentialId: number,
-        field: keyof Credentials,
-        value: any,
+    const updateCredential = <K extends EditableCredentialField>(
+        credential: Credentials,
+        field: K,
+        value: Credentials[K],
     ) => {
-        setCurrentData((prev) => ({
-            ...prev,
-            credentials: {
-                ...prev.credentials,
-                [credentialId]: {
-                    ...prev.credentials[credentialId],
-                    [field]: value,
-                },
-            },
-        }));
+        setCurrentData((prev) =>
+            mapAccounts(prev, (acc) =>
+                acc.credentials.some((c) => c.id === credential.id)
+                    ? {
+                          ...acc,
+                          credentials: acc.credentials.map((c) =>
+                              c.id === credential.id
+                                  ? { ...c, [field]: value }
+                                  : c,
+                          ),
+                      }
+                    : acc,
+            ),
+        );
     };
 
     return (
         <DataContext.Provider
             value={{
                 currentData,
-                setCurrentData: setCurrentData,
+                setCurrentData,
                 sortCurrentData,
                 createPerson,
                 createAccount,

@@ -60,6 +60,14 @@ function App() {
             const decryptedText = await decryptText(textInput, passwordInput);
             const jsonData: Data = JSON.parse(decryptedText);
 
+            if (
+                !jsonData ||
+                !jsonData.people ||
+                !Array.isArray(jsonData.people)
+            ) {
+                throw new Error("Decrypt sucessful, but format is invalid.");
+            }
+
             setCurrentData(jsonData);
             sortCurrentData(); //TODO sort the json data itself before updating data
         } catch (error) {
@@ -156,7 +164,10 @@ function App() {
                 <div className="flex-grow-1 d-flex flex-column row-gap-2 h-100">
                     <div className="d-flex flex-column row-gap-2 overflow-y-scroll">
                         {Object.values(currentData.people).map((person) => (
-                            <PersonRow person={person}></PersonRow>
+                            <PersonRow
+                                key={person.id}
+                                person={person}
+                            ></PersonRow>
                         ))}
                     </div>
 

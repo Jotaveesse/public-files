@@ -3,7 +3,7 @@ import ImageCopy from "../assets/copy.svg";
 import ImageCheckSquare from "../assets/check-square.svg";
 import ImageSafe from "../assets/safe.svg";
 import ImageMinus from "../assets/minus.svg";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import { useData, type Credentials } from "../DataContext.tsx";
 import TextInput from "./TextInput.tsx";
 import PasswordInput from "./PasswordInput.tsx";
@@ -17,7 +17,7 @@ const CredentialsRow = ({
     className,
     ...rest
 }: CredentialsRowProps) => {
-    const { currentData, updateCredential, removeCredentials } = useData();
+    const { updateCredential, removeCredentials } = useData();
     const [copied, setCopied] = useState(false);
 
     const handleCopy = async () => {
@@ -42,7 +42,7 @@ const CredentialsRow = ({
                     className="flex-grow-1"
                     onChange={(e) =>
                         updateCredential(
-                            credentials.id,
+                            credentials,
                             "username",
                             e.target.value,
                         )
@@ -57,7 +57,7 @@ const CredentialsRow = ({
                     className="flex-grow-1 ms-4"
                     onChange={(e) =>
                         updateCredential(
-                            credentials.id,
+                            credentials,
                             "password",
                             e.target.value,
                         )
@@ -79,7 +79,7 @@ const CredentialsRow = ({
                     <IconButton
                         title="Remove Credentials"
                         icon={ImageMinus}
-                        onClick={() => removeCredentials(credentials.id)}
+                        onClick={() => removeCredentials(credentials)}
                     ></IconButton>
                 </div>
             </div>

@@ -17,8 +17,7 @@ const AccountRow = ({
     style,
     ...rest
 }: AccountRowProps) => {
-    const { currentData, updateAccountName, removeAccount, createCredentials } =
-        useData();
+    const { updateAccountName, removeAccount, createCredentials } = useData();
     const [editingName, setEditingName] = useState(false);
     const accountNameInput = useRef<HTMLInputElement>(null);
     const accountNameText = useRef<HTMLDivElement>(null);
@@ -48,9 +47,7 @@ const AccountRow = ({
                     className="bg-secondary p-1 ms-1 border-0 rounded-2 h-50 m-auto text-white fw-bold"
                     style={{ display: editingName ? "block" : "none" }}
                     onBlur={handleAccountBlur}
-                    onChange={(e) =>
-                        updateAccountName(account.id, e.target.value)
-                    }
+                    onChange={(e) => updateAccountName(account, e.target.value)}
                     onKeyDown={(e) => {
                         if (e.key === "Enter") {
                             handleAccountBlur();
@@ -70,12 +67,12 @@ const AccountRow = ({
                 <IconButton
                     title="Remove Account"
                     icon={ImageMinus}
-                    onClick={() => removeAccount(account.id)}
+                    onClick={() => removeAccount(account)}
                 ></IconButton>
             </div>
 
             <div className="">
-                {account.credentialIds.map((credentialId, index, array) => {
+                {account.credentials.map((credential, index, array) => {
                     const isFirst = index === 0;
                     const isLast = index === array.length - 1;
 
@@ -91,7 +88,8 @@ const AccountRow = ({
 
                     return (
                         <CredentialsRow
-                            credentials={currentData.credentials[credentialId]}
+                            key={credential.id}
+                            credentials={credential}
                             style={{ borderRadius: dynamicRadius }}
                         />
                     );
@@ -101,7 +99,7 @@ const AccountRow = ({
                 className="rounded-top-0 ms-auto"
                 title="Add New Credentials"
                 icon={ImagePlus}
-                onClick={() => createCredentials(account.id)}
+                onClick={() => createCredentials(account)}
             ></IconButton>
         </div>
     );
