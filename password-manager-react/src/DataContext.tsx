@@ -4,7 +4,12 @@ export type Credentials = {
     id: string;
     username: string;
     password: string;
-    backupCodes: string[];
+    backupCodes: BackupCode[];
+};
+
+export type BackupCode = {
+    id: string;
+    code: string;
 };
 
 export type Account = { id: string; name: string; credentials: Credentials[] };
@@ -21,9 +26,11 @@ interface DataContextType {
     removePerson: (person: Person) => void;
     removeAccount: (account: Account) => void;
     removeCredentials: (credential: Credentials) => void;
+    removeBackupCode: (backupCode: BackupCode) => void;
     createPerson: () => void;
     createAccount: (person: Person) => void;
     createCredentials: (account: Account) => void;
+    createBackupCode: (credential: Credentials) => void;
     updatePersonName: (person: Person, newName: string) => void;
     updateAccountName: (account: Account, newName: string) => void;
     updateCredential: <K extends EditableCredentialField>(
@@ -31,6 +38,7 @@ interface DataContextType {
         field: K,
         value: Credentials[K],
     ) => void;
+    updateBackupCode: (backupCode: BackupCode, newCode: string) => void;
 }
 
 const emptyData: Data = {
@@ -90,9 +98,14 @@ export const sortData = (data: Data): Data => ({
                 .sort((a, b) => cmp(a.name, b.name))
                 .map((account) => ({
                     ...account,
-                    credentials: [...account.credentials].sort((a, b) =>
-                        cmp(a.username, b.username),
-                    ),
+                    credentials: [...account.credentials]
+                        .sort((a, b) => cmp(a.username, b.username))
+                        .map((credential) => ({
+                            ...credential,
+                            backupCodes: [...credential.backupCodes].sort(
+                                (a, b) => cmp(a.code, b.code),
+                            ),
+                        })),
                 })),
         })),
 });
@@ -143,6 +156,34 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
         );
     };
 
+    const createBackupCode = (credential: Credentials) => {
+        const newBackupCode: BackupCode = {
+            id: generateId(),
+            code: "",
+        };
+
+        setCurrentData((prev) =>
+            mapAccounts(prev, (acc) =>
+                acc.credentials.some((c) => c.id === credential.id)
+                    ? {
+                          ...acc,
+                          credentials: acc.credentials.map((c) =>
+                              c.id === credential.id
+                                  ? {
+                                        ...c,
+                                        backupCodes: [
+                                            ...c.backupCodes,
+                                            newBackupCode,
+                                        ],
+                                    }
+                                  : c,
+                          ),
+                      }
+                    : acc,
+            ),
+        );
+    };
+
     // ==========================================
     // REMOVE METHODS
     // ==========================================
@@ -178,6 +219,31 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
                           ...acc,
                           credentials: acc.credentials.filter(
                               (c) => c.id !== credential.id,
+                          ),
+                      }
+                    : acc,
+            ),
+        );
+    };
+
+    const removeBackupCode = (backupCode: BackupCode) => {
+        const hasCode = (c: Credentials) =>
+            c.backupCodes.some((b) => b.id === backupCode.id);
+
+        setCurrentData((prev) =>
+            mapAccounts(prev, (acc) =>
+                acc.credentials.some(hasCode)
+                    ? {
+                          ...acc,
+                          credentials: acc.credentials.map((c) =>
+                              hasCode(c)
+                                  ? {
+                                        ...c,
+                                        backupCodes: c.backupCodes.filter(
+                                            (b) => b.id !== backupCode.id,
+                                        ),
+                                    }
+                                  : c,
                           ),
                       }
                     : acc,
@@ -227,6 +293,33 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
         );
     };
 
+    const updateBackupCode = (backupCode: BackupCode, newCode: string) => {
+        const hasCode = (c: Credentials) =>
+            c.backupCodes.some((b) => b.id === backupCode.id);
+
+        setCurrentData((prev) =>
+            mapAccounts(prev, (acc) =>
+                acc.credentials.some(hasCode)
+                    ? {
+                          ...acc,
+                          credentials: acc.credentials.map((c) =>
+                              hasCode(c)
+                                  ? {
+                                        ...c,
+                                        backupCodes: c.backupCodes.map((b) =>
+                                            b.id === backupCode.id
+                                                ? { ...b, code: newCode }
+                                                : b,
+                                        ),
+                                    }
+                                  : c,
+                          ),
+                      }
+                    : acc,
+            ),
+        );
+    };
+
     return (
         <DataContext.Provider
             value={{
@@ -236,12 +329,15 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
                 createPerson,
                 createAccount,
                 createCredentials,
+                createBackupCode,
                 removePerson,
                 removeAccount,
                 removeCredentials,
+                removeBackupCode,
                 updatePersonName,
                 updateAccountName,
                 updateCredential,
+                updateBackupCode,
             }}
         >
             {children}

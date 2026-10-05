@@ -1,4 +1,4 @@
-import type { Account } from "../DataContext.tsx";
+import type { Account, Credentials } from "../DataContext.tsx";
 import IconButton from "./IconButton.tsx";
 import ImagePlus from "../assets/plus.svg";
 import ImageMinus from "../assets/minus.svg";
@@ -9,10 +9,12 @@ import CredentialsRow from "./CredentialsRow.tsx";
 
 interface AccountRowProps extends React.HTMLAttributes<HTMLElement> {
     account: Account;
+    onSeeCodes?: (credential: Credentials, target: HTMLElement) => void;
 }
 
 const AccountRow = ({
     account,
+    onSeeCodes,
     className,
     style,
     ...rest
@@ -39,7 +41,9 @@ const AccountRow = ({
 
     return (
         <div {...rest}>
-            <div className="d-flex w-50 bg-primary rounded-top-3">
+            <div
+                className={`d-flex w-50 bg-primary ${account.credentials.length === 0 ? "rounded-top-3 rounded-end-3" : "rounded-top-3"}`}
+            >
                 <Form.Control
                     type="text"
                     ref={accountNameInput}
@@ -90,13 +94,14 @@ const AccountRow = ({
                         <CredentialsRow
                             key={credential.id}
                             credentials={credential}
+                            onSeeCodes={onSeeCodes}
                             style={{ borderRadius: dynamicRadius }}
                         />
                     );
                 })}
             </div>
             <IconButton
-                className="rounded-top-0 ms-auto"
+                className={`rounded-top-0 ${account.credentials.length === 0 ? "me-auto" : "ms-auto"}`}
                 title="Add New Credentials"
                 icon={ImagePlus}
                 onClick={() => createCredentials(account)}

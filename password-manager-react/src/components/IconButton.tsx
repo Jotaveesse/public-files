@@ -6,7 +6,7 @@ interface IconButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> 
     variant?: "primary" | "secondary";
     style?: React.CSSProperties;
     outerPadding?: boolean;
-    onClick?: () => void;
+    onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 const IconButton = ({

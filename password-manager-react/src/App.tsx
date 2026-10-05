@@ -6,8 +6,9 @@ import PasswordInput from "./components/PasswordInput";
 import FileInput from "./components/FileInput";
 import TextArea from "./components/TextArea";
 import PersonRow from "./components/PersonRow";
-import { useData, type Data } from "./DataContext";
+import { useData, type Credentials, type Data } from "./DataContext";
 import { decryptText, encryptText } from "./crypter";
+import BackupCodes from "./components/BackupCodes";
 
 function App() {
     const [textInput, setTextInput] = useState("");
@@ -17,6 +18,22 @@ function App() {
 
     const { currentData, setCurrentData, sortCurrentData, createPerson } =
         useData();
+
+    const [selectedCredentialsId, setSelectedCredentialsId] = useState<
+        string | null
+    >(null);
+
+    const [popupAnchor, setPopupAnchor] = useState<HTMLElement | null>(null);
+
+    const handleSeeCodes = (credential: Credentials, target: HTMLElement) => {
+        setPopupAnchor(target);
+        setSelectedCredentialsId(credential.id);
+    };
+
+    const handleClosePopup = () => {
+        setPopupAnchor(null);
+        setSelectedCredentialsId(null);
+    };
 
     const handleFileUpload = function (e: React.ChangeEvent<HTMLInputElement>) {
         const file = e.target.files?.[0];
@@ -167,6 +184,7 @@ function App() {
                             <PersonRow
                                 key={person.id}
                                 person={person}
+                                onSeeCodes={handleSeeCodes}
                             ></PersonRow>
                         ))}
                     </div>
@@ -181,50 +199,16 @@ function App() {
                 </div>
             </div>
 
-            <template className="codes-popup">
-                <div className="codes-window">
-                    <div className="codes-title"></div>
-                    <div className="code-list">
-                        <div className="code-row">
-                            <div className="code-input">
-                                <input type="password"></input>
-                            </div>
-
-                            <div>
-                                <div className="button-wrapper">
-                                    <div
-                                        id="new-code-button"
-                                        className="new-button  "
-                                        title="Add New Backup Code"
-                                    >
-                                        <img src="assets/plus.svg" />
-                                    </div>
-                                </div>
-
-                                <div className="button-wrapper">
-                                    <div
-                                        id="new-code-button"
-                                        className="new-button  "
-                                        title="Add New Backup Code"
-                                    >
-                                        <img src="assets/plus.svg" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="button-wrapper">
-                    <div
-                        id="new-code-button"
-                        className="new-button  "
-                        title="Add New Backup Code"
-                    >
-                        <img src="assets/plus.svg" />
-                    </div>
-                </div>
-            </template>
+            <BackupCodes
+                credentials={
+                    currentData.people
+                        .flatMap((p) => p.accounts)
+                        .flatMap((a) => a.credentials)
+                        .find((c) => c.id === selectedCredentialsId) ?? null
+                }
+                target={popupAnchor}
+                onClose={handleClosePopup}
+            ></BackupCodes>
         </>
     );
 }

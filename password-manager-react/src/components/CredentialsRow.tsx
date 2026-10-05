@@ -10,10 +10,12 @@ import PasswordInput from "./PasswordInput.tsx";
 
 interface CredentialsRowProps extends React.HTMLAttributes<HTMLElement> {
     credentials: Credentials;
+    onSeeCodes?: (credential: Credentials, target: HTMLElement) => void;
 }
 
 const CredentialsRow = ({
     credentials,
+    onSeeCodes,
     className,
     ...rest
 }: CredentialsRowProps) => {
@@ -74,6 +76,11 @@ const CredentialsRow = ({
                     <IconButton
                         title="See Backup Codes"
                         icon={ImageSafe}
+                        onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                            if (onSeeCodes) {
+                                onSeeCodes(credentials, e.currentTarget);
+                            }
+                        }}
                     ></IconButton>
 
                     <IconButton

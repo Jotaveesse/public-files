@@ -4,7 +4,7 @@ import ImageEyeOpen from "../assets/eye-open.svg";
 import ImageEyeClosed from "../assets/eye-closed.svg";
 import { useState } from "react";
 
-interface PasswordInputProps {
+interface PasswordInputProps extends React.HTMLAttributes<HTMLElement> {
     title?: string;
     value: string;
     horizontalLayout?: boolean;
@@ -20,6 +20,7 @@ const PasswordInput = ({
     variant = "primary",
     className,
     onChange,
+    ...rest
 }: PasswordInputProps) => {
     const horizontalClassName =
         "d-flex flex-row align-items-center column-gap-2";
@@ -40,12 +41,15 @@ const PasswordInput = ({
                 " " +
                 className
             }
+            {...rest}
         >
-            <Form.Label
-                className={`fw-bold text-white ${horizontalLayout && "mb-0"}`}
-            >
-                {title}
-            </Form.Label>
+            {title && (
+                <Form.Label
+                    className={`fw-bold text-white ${horizontalLayout && "mb-0"}`}
+                >
+                    {title}
+                </Form.Label>
+            )}
 
             <Form.Group className="d-flex flex-grow-1 column-gap-2">
                 <Form.Control

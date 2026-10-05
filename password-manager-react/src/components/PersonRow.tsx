@@ -1,4 +1,4 @@
-import type { Person } from "../DataContext.tsx";
+import type { Credentials, Person } from "../DataContext.tsx";
 import IconButton from "./IconButton.tsx";
 import ImagePlus from "../assets/plus.svg";
 import ImageMinus from "../assets/minus.svg";
@@ -11,10 +11,17 @@ import { useData } from "../DataContext";
 
 interface PersonRowProps extends React.HTMLAttributes<HTMLElement> {
     person: Person;
+    onSeeCodes?: (credential: Credentials, target: HTMLElement) => void;
 }
 
-const PersonRow = ({ person, className, style, ...rest }: PersonRowProps) => {
-    const [expanded, setExpanded] = useState(false);
+const PersonRow = ({
+    person,
+    onSeeCodes,
+    className,
+    style,
+    ...rest
+}: PersonRowProps) => {
+    const [expanded, setExpanded] = useState("New Person" === person.name);
     const [editingName, setEditingName] = useState(false);
     const personNameInput = useRef<HTMLInputElement>(null);
     const personNameText = useRef<HTMLDivElement>(null);
@@ -83,23 +90,26 @@ const PersonRow = ({ person, className, style, ...rest }: PersonRowProps) => {
             </div>
 
             {expanded && (
-                <div className="person-accounts">
-                    {person.accounts.map((account) => (
-                        <AccountRow
-                            key={account.id}
-                            account={account}
-                        ></AccountRow>
-                    ))}
-                </div>
-            )}
+                <>
+                    <div className="person-accounts">
+                        {person.accounts.map((account) => (
+                            <AccountRow
+                                key={account.id}
+                                account={account}
+                                onSeeCodes={onSeeCodes}
+                            ></AccountRow>
+                        ))}
+                    </div>
 
-            <IconButton
-                icon={ImagePlus}
-                title="Add New Account"
-                variant="secondary"
-                outerPadding={false}
-                onClick={() => createAccount(person)}
-            ></IconButton>
+                    <IconButton
+                        icon={ImagePlus}
+                        title="Add New Account"
+                        variant="secondary"
+                        outerPadding={false}
+                        onClick={() => createAccount(person)}
+                    ></IconButton>
+                </>
+            )}
         </div>
     );
 };
