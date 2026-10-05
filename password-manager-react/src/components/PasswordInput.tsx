@@ -6,7 +6,6 @@ import { useState } from "react";
 
 interface PasswordInputProps {
     title?: string;
-    id?: string;
     value: string;
     horizontalLayout?: boolean;
     variant?: "primary" | "secondary";
@@ -17,7 +16,6 @@ interface PasswordInputProps {
 const PasswordInput = ({
     value,
     title,
-    id,
     horizontalLayout = false,
     variant = "primary",
     className,
@@ -44,7 +42,6 @@ const PasswordInput = ({
             }
         >
             <Form.Label
-                htmlFor={id}
                 className={`fw-bold text-white ${horizontalLayout && "mb-0"}`}
             >
                 {title}
@@ -55,7 +52,7 @@ const PasswordInput = ({
                     className={`flex-grow-1 border-0 text-white py-1 px-2 fs-6 fw-medium ${wrapperVariant}`}
                     value={value}
                     type={showingPassword ? "text" : "password"}
-                    id={id}
+                    autoComplete="off"
                     onChange={onChange}
                 />
 

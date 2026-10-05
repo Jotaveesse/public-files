@@ -5,18 +5,18 @@ import ImagePlus from "./assets/plus.svg";
 import PasswordInput from "./components/PasswordInput";
 import FileInput from "./components/FileInput";
 import TextArea from "./components/TextArea";
-import LoadingBar from "./components/LoadingBar";
 import PersonRow from "./components/PersonRow";
-import { useData } from "./DataContext";
+import { useData, type Data } from "./DataContext";
+import { decryptText, encryptText } from "./crypter";
 
 function App() {
     const [textInput, setTextInput] = useState("");
     const [textOutput, setTextOutput] = useState("");
     const [passwordInput, setPasswordInput] = useState("");
-    const [progressPerc, setProgressPerc] = useState(0);
     const [errorMessage, setErrorMessage] = useState("");
 
-    const { currentData, createPerson } = useData();
+    const { currentData, setCurrentData, sortCurrentData, createPerson } =
+        useData();
 
     const handleFileUpload = function (e: React.ChangeEvent<HTMLInputElement>) {
         const file = e.target.files?.[0];
@@ -34,6 +34,53 @@ function App() {
         };
 
         reader.readAsText(file);
+    };
+
+    const handleEncryptButtonClick = async () => {
+        try {
+            setErrorMessage("");
+
+            const jsonData = JSON.stringify(currentData);
+            const encryptedText = await encryptText(jsonData, passwordInput);
+
+            setTextOutput(encryptedText);
+        } catch (error) {
+            console.error("Encryption error:", error);
+            setErrorMessage(
+                String(error instanceof Error ? error.message : error) ||
+                    "Encryption failed.",
+            );
+        }
+    };
+
+    const handleDecryptButtonClick = async () => {
+        try {
+            setErrorMessage("");
+
+            const decryptedText = await decryptText(textInput, passwordInput);
+            const jsonData: Data = JSON.parse(decryptedText);
+
+            setCurrentData(jsonData);
+            sortCurrentData(); //TODO sort the json data itself before updating data
+        } catch (error) {
+            setErrorMessage(
+                String(error instanceof Error ? error.message : error) ||
+                    "Decryption failed.",
+            );
+        }
+    };
+
+    const handleDownloadButtonClick = () => {
+        const blob = new Blob([textOutput], { type: "text/plain" });
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "passwords.txt";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
     };
 
     return (
@@ -75,22 +122,33 @@ function App() {
                         ></TextArea>
 
                         <div className="d-flex ms-auto column-gap-2">
-                            <Button variant="secondary">Decrypt</Button>
-                            <Button variant="secondary">Encrypt</Button>
-                            <Button variant="secondary">Download</Button>
+                            <Button
+                                variant="secondary"
+                                onClick={handleDecryptButtonClick}
+                            >
+                                Decrypt
+                            </Button>
+                            <Button
+                                variant="secondary"
+                                onClick={handleEncryptButtonClick}
+                            >
+                                Encrypt
+                            </Button>
+                            <Button
+                                variant="secondary"
+                                onClick={handleDownloadButtonClick}
+                            >
+                                Download
+                            </Button>
                         </div>
 
                         <div className="d-flex w-100">
-                            {errorMessage === "" ? (
-                                <LoadingBar
-                                    style={{ height: "1.5rem" }}
-                                    value={progressPerc}
-                                ></LoadingBar>
-                            ) : (
-                                <div className="fw-bold text-align-center ms-auto me-auto">
-                                    {errorMessage}
-                                </div>
-                            )}
+                            <div
+                                className="fw-bold text-align-center ms-auto me-auto fs-6"
+                                style={{ height: "1.5em" }}
+                            >
+                                {errorMessage}
+                            </div>
                         </div>
                     </div>
                 </div>

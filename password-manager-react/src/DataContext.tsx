@@ -31,6 +31,8 @@ export type Data = {
 // 2. Define the Context structure
 interface DataContextType {
     currentData: Data;
+    setCurrentData: React.Dispatch<React.SetStateAction<Data>>;
+    sortCurrentData: () => void;
     removePerson: (personId: number) => void;
     removeAccount: (accountId: number) => void;
     removeCredentials: (credentialId: number) => void;
@@ -47,30 +49,9 @@ interface DataContextType {
 }
 
 const emptyData: Data = {
-    people: {
-        0: {
-            id: 0,
-            name: "Person",
-            accountIds: [0],
-        },
-    },
-    accounts: {
-        0: {
-            id: 0,
-            personId: 0,
-            name: "Account",
-            credentialIds: [0],
-        },
-    },
-    credentials: {
-        0: {
-            id: 0,
-            accountId: 0,
-            username: "",
-            password: "",
-            backupCodes: [],
-        },
-    },
+    people: {},
+    accounts: {},
+    credentials: {},
 };
 
 // 3. Create the Context
@@ -81,6 +62,39 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
 
     // Simple helper to generate unique numeric IDs
     const generateId = () => Date.now() + Math.floor(Math.random() * 1000);
+
+    const sortCurrentData = () => {
+        setCurrentData((prev) => {
+            const sortedPeople = Object.values(prev.people).sort((a, b) =>
+                a.name.localeCompare(b.name),
+            );
+            const sortedAccounts = Object.values(prev.accounts).sort((a, b) =>
+                a.name.localeCompare(b.name),
+            );
+            const sortedCredentials = Object.values(prev.credentials).sort(
+                (a, b) => a.username.localeCompare(b.username),
+            );
+
+            return {
+                ...prev,
+                people: sortedPeople.reduce(
+                    (acc, person) => ({ ...acc, [person.id]: person }),
+                    {},
+                ),
+                accounts: sortedAccounts.reduce(
+                    (acc, account) => ({ ...acc, [account.id]: account }),
+                    {},
+                ),
+                credentials: sortedCredentials.reduce(
+                    (acc, credential) => ({
+                        ...acc,
+                        [credential.id]: credential,
+                    }),
+                    {},
+                ),
+            };
+        });
+    };
 
     // ==========================================
     // CREATE METHODS
@@ -291,6 +305,8 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
         <DataContext.Provider
             value={{
                 currentData,
+                setCurrentData: setCurrentData,
+                sortCurrentData,
                 createPerson,
                 createAccount,
                 createCredentials,
