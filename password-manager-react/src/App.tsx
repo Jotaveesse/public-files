@@ -16,7 +16,7 @@ function App() {
     const [textOutput, setTextOutput] = useState("");
     const [passwordInput, setPasswordInput] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
-    const [timeLeft, setTimeLeft] = useState("5:00");
+    const [timeLeft, setTimeLeft] = useState("05:00");
     const {
         currentData,
         setCurrentData,
@@ -210,6 +210,7 @@ function App() {
 
                 <div className="flex-grow-1 d-flex flex-column row-gap-2 h-100">
                     <div
+                        title="Time left before erasing data"
                         className="fs-6 text-end"
                         style={{
                             visibility:
@@ -238,7 +239,12 @@ function App() {
                         icon={ImagePlus}
                         variant="secondary"
                         className="ms-auto"
-                        onClick={() => createPerson()}
+                        onClick={() => {
+                            if (currentData.people.length === 0) {
+                                setTimeLeft("05:00");
+                            }
+                            createPerson();
+                        }}
                     ></IconButton>
                 </div>
             </div>
