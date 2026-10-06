@@ -22,7 +22,7 @@ export interface EncryptedPackage {
     ciphertext: string; // base64 (includes 128-bit GCM tag)
 }
 
-const FORMAT_VERSION = 1;
+export const FORMAT_VERSION = 1;
 const CURRENT_ITERATIONS = 600_000; // OWASP guidance for PBKDF2-HMAC-SHA256
 const MIN_ITERATIONS = 100_000; // reject downgraded params
 const MAX_ITERATIONS = 10_000_000; // reject DoS-by-params

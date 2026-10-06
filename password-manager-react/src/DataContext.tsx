@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState } from "react";
+import { FORMAT_VERSION } from "./crypter";
 
 export type Credentials = {
     id: string;
@@ -14,7 +15,12 @@ export type BackupCode = {
 
 export type Account = { id: string; name: string; credentials: Credentials[] };
 export type Person = { id: string; name: string; accounts: Account[] };
-export type Data = { version: 1; people: Person[] };
+export type Data = { version: number; people: Person[] };
+
+const emptyData: Data = {
+    people: [],
+    version: FORMAT_VERSION,
+};
 
 type EditableCredentialField = Exclude<keyof Credentials, "id">;
 
@@ -23,6 +29,7 @@ interface DataContextType {
     currentData: Data;
     setCurrentData: React.Dispatch<React.SetStateAction<Data>>;
     sortCurrentData: () => void;
+    clearData: () => void;
     removePerson: (person: Person) => void;
     removeAccount: (account: Account) => void;
     removeCredentials: (credential: Credentials) => void;
@@ -40,11 +47,6 @@ interface DataContextType {
     ) => void;
     updateBackupCode: (backupCode: BackupCode, newCode: string) => void;
 }
-
-const emptyData: Data = {
-    people: [],
-    version: 1,
-};
 
 // ==========================================
 // HELPERS (pure, outside the component)
@@ -117,6 +119,8 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
     const [currentData, setCurrentData] = useState<Data>(emptyData);
 
     const sortCurrentData = () => setCurrentData((prev) => sortData(prev));
+
+    const clearData = () => setCurrentData(emptyData);
 
     // ==========================================
     // CREATE METHODS (each is one atomic update)
@@ -326,6 +330,7 @@ export const DataProvider = ({ children }: { children: React.ReactNode }) => {
                 currentData,
                 setCurrentData,
                 sortCurrentData,
+                clearData,
                 createPerson,
                 createAccount,
                 createCredentials,

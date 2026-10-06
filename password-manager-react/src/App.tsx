@@ -9,21 +9,51 @@ import PersonRow from "./components/PersonRow";
 import { useData, type Credentials, type Data } from "./DataContext";
 import { decryptText, encryptText } from "./crypter";
 import BackupCodes from "./components/BackupCodes";
+import { useIdleTimeout } from "./useIdleTimeout";
 
 function App() {
     const [textInput, setTextInput] = useState("");
     const [textOutput, setTextOutput] = useState("");
     const [passwordInput, setPasswordInput] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
-
-    const { currentData, setCurrentData, sortCurrentData, createPerson } =
-        useData();
-
+    const [timeLeft, setTimeLeft] = useState("5:00");
+    const {
+        currentData,
+        setCurrentData,
+        sortCurrentData,
+        createPerson,
+        clearData,
+    } = useData();
     const [selectedCredentialsId, setSelectedCredentialsId] = useState<
         string | null
     >(null);
 
     const [popupAnchor, setPopupAnchor] = useState<HTMLElement | null>(null);
+
+    const lock = () => {
+        clearData();
+        setPasswordInput("");
+        setSelectedCredentialsId(null);
+    };
+
+    useIdleTimeout(
+        lock,
+        (timeLeft) => {
+            const totalSeconds = Math.max(0, timeLeft / 1000);
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = Math.floor(totalSeconds % 60);
+
+            const formattedMinutes = String(minutes.toFixed(0)).padStart(
+                2,
+                "0",
+            );
+            const formattedSeconds = seconds.toFixed(0).padStart(2, "0");
+
+            setTimeLeft(`${formattedMinutes}:${formattedSeconds}`);
+        },
+        5 * 60 * 1000,
+        currentData.people.length > 0,
+    );
 
     const handleSeeCodes = (credential: Credentials, target: HTMLElement) => {
         setPopupAnchor(target);
@@ -179,15 +209,29 @@ function App() {
                 </div>
 
                 <div className="flex-grow-1 d-flex flex-column row-gap-2 h-100">
-                    <div className="d-flex flex-column row-gap-2 overflow-y-scroll">
-                        {Object.values(currentData.people).map((person) => (
-                            <PersonRow
-                                key={person.id}
-                                person={person}
-                                onSeeCodes={handleSeeCodes}
-                            ></PersonRow>
-                        ))}
+                    <div
+                        className="fs-6 text-end"
+                        style={{
+                            visibility:
+                                currentData.people.length > 0
+                                    ? "visible"
+                                    : "hidden",
+                        }}
+                    >
+                        {timeLeft}
                     </div>
+
+                    {currentData.people.length > 0 && (
+                        <div className="d-flex flex-column row-gap-2 overflow-y-scroll">
+                            {currentData.people.map((person) => (
+                                <PersonRow
+                                    key={person.id}
+                                    person={person}
+                                    onSeeCodes={handleSeeCodes}
+                                ></PersonRow>
+                            ))}
+                        </div>
+                    )}
 
                     <IconButton
                         title="Add New Person"
