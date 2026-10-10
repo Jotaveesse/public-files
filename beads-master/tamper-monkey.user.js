@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         PixelBead Master Addons
 // @namespace    http://tampermonkey.net/
-// @version      1.1.1
+// @version      1.2.0
 // @updateURL    https://raw.githubusercontent.com/Jotaveesse/public-files/refs/heads/main/beads-master/tamper-monkey.user.js
 // @downloadURL  https://raw.githubusercontent.com/Jotaveesse/public-files/refs/heads/main/beads-master/tamper-monkey.user.js
 // @match        https://pixel-bead.pixarmaster.com/*
@@ -501,9 +501,12 @@
         const gridWidth = Math.round(cropped.width / effectivePixelSize);
         const gridHeight = Math.round(cropped.height / effectivePixelSize);
 
-        store
-            .getState()
-            .updateOptions({ width: gridWidth, height: gridHeight });
+        const s = store.getState();
+        store.setState({
+            options: { ...s.options, width: gridWidth, height: gridHeight },
+        });
+
+        await store.getState().processImage();
 
         console.log(
             "[pb] pixel size:",
@@ -645,13 +648,22 @@
             const section = document.querySelectorAll(
                 ".Sidebar-module__WZVnLW__section",
             )[2];
-            if (!section) return;
 
-            const controlGroups = section.querySelectorAll(
-                ".Sidebar-module__WZVnLW__controlGroup",
+            if (section) {
+                const controlGroups = section.querySelectorAll(
+                    ".Sidebar-module__WZVnLW__controlGroup",
+                );
+                buildPanel(store, controlGroups[2]);
+                buildAutoCropButton(store, controlGroups[0]);
+            }
+
+            const imageElement = document.querySelector(
+                ".ImageCropper-module__u4-CNq__sourceImage",
             );
-            buildPanel(store, controlGroups[2]);
-            buildAutoCropButton(store, controlGroups[0]);
+
+            if (imageElement) {
+                imageElement.style.imageRendering = "crisp-edges";
+            }
         });
 
         obs.observe(document.documentElement, {
@@ -660,9 +672,11 @@
         });
         obs.takeRecords(); // trigger an immediate check in case elements already exist
         obs.disconnect();
+
         const section = document.querySelectorAll(
             ".Sidebar-module__WZVnLW__section",
         )[2];
+
         if (section) {
             const controlGroups = section.querySelectorAll(
                 ".Sidebar-module__WZVnLW__controlGroup",
